@@ -1,13 +1,13 @@
 package com.yiw.circledemo.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.yiw.circledemo.bean.CircleItem;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.bean.User;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 /**
  * 
 * @ClassName: DatasUtil 
@@ -113,7 +113,6 @@ public class DatasUtil {
 	public static int getRandomNum(int max) {
 		Random random = new Random();
 		int result = random.nextInt(max);
-		System.out.println("getRandomNum : " + result);
 		return result;
 	}
 
