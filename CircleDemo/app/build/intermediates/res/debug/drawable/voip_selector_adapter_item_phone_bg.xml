@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 非触摸模式下获得焦点并单击时的背景图片 -->
+    <item android:drawable="@color/adapter_item_phone_selector_color"  android:state_pressed="true"/>
+    <!-- 触摸模式下单击时的背景图片 -->
+    <item android:drawable="@color/adapter_item_phone_selector_color"  android:state_pressed="true"/>
+    <!-- 获得焦点时的图片背景 -->
+    <!-- <item android:drawable="@color/white" android:state_focused="true"/> -->
+    
+    <item android:drawable="@android:color/transparent"/>
+</selector><!-- From: file:/E:/AndroidStudoWorkspace/CircleDemo/app/src/main/res/drawable/voip_selector_adapter_item_phone_bg.xml -->

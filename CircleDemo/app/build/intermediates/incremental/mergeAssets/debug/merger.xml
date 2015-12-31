@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="22.2.1"><source path="E:\AndroidStudoWorkspace\CircleDemo\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.1\assets"/></dataSet><dataSet config="main"><source path="E:\AndroidStudoWorkspace\CircleDemo\app\src\main\assets"/></dataSet><dataSet config="debug"><source path="E:\AndroidStudoWorkspace\CircleDemo\app\src\debug\assets"/></dataSet></merger>

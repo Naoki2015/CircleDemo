@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.yiw.circledemo.MainActivity" >
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/mRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <ListView
+                android:id="@+id/circleLv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cacheColorHint="@android:color/transparent"
+                android:divider="@null"
+                android:dividerHeight="0px"
+                android:fadingEdge="none"
+                android:fadingEdgeLength="0dp"
+                android:focusable="true"
+                android:transcriptMode="normal"
+                android:listSelector="@android:color/transparent" >
+            </ListView>
+            
+            <LinearLayout 
+                android:id="@+id/editTextBodyLl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:gravity="center_vertical"
+                android:layout_alignParentBottom="true"
+                android:background="#f6f6f6"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                >
+                <EditText 
+                    android:id="@+id/circleEt"
+                    android:layout_width="wrap_content"
+                	android:layout_height="wrap_content"
+                	android:layout_weight="1"
+                	android:hint="说点什么..."
+                    />
+                <TextView 
+                    android:id="@+id/sendTv"
+                    android:layout_width="wrap_content"
+                	android:layout_height="wrap_content"
+                	android:padding="8dp"
+                	android:layout_marginLeft="6dp"
+                	android:layout_marginRight="6dp"
+                	android:text="发送"
+                	android:background="@android:color/white"
+                	android:textSize="16sp"
+                    />
+            </LinearLayout>
+        </RelativeLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</RelativeLayout>
