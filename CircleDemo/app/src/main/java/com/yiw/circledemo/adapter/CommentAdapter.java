@@ -111,8 +111,6 @@ public class CommentAdapter extends BaseAdapter {
         subjectSpanText.setSpan(new NameClickable(new NameClickListener(
                         subjectSpanText, "")), 0, subjectSpanText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        subjectSpanText.setSpan(new BackgroundColorSpan(mContext.getResources().getColor(R.color.name_selector_text)),
-                0, subjectSpanText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(subjectSpanText);
@@ -182,8 +180,10 @@ public class CommentAdapter extends BaseAdapter {
         @Override
         public void updateDrawState(TextPaint ds) {
             super.updateDrawState(ds);
+
             int colorValue = mContext.getResources().getColor(
                     R.color.color_8290AF);
+            ds.bgColor = mContext.getResources().getColor(R.color.name_selector_text);
             ds.setColor(colorValue);
             ds.setUnderlineText(false);
             ds.clearShadowLayer();
@@ -208,13 +208,15 @@ public class CommentAdapter extends BaseAdapter {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public class MyMovementMethod extends BaseMovementMethod {
+        public final String TAG = MyMovementMethod.class.getSimpleName();
+        private BackgroundColorSpan mBgSpan;
+        private ClickableSpan[] mClickLinks;
 
         public boolean onTouchEvent(TextView widget, Spannable buffer,
                                     MotionEvent event) {
-            int action = event.getAction();
 
-            if (action == MotionEvent.ACTION_UP
-                    || action == MotionEvent.ACTION_DOWN) {
+            int action = event.getAction();
+            if(action == MotionEvent.ACTION_DOWN){
                 int x = (int) event.getX();
                 int y = (int) event.getY();
 
@@ -228,42 +230,39 @@ public class CommentAdapter extends BaseAdapter {
                 int line = layout.getLineForVertical(y);
                 int off = layout.getOffsetForHorizontal(line, x);
 
-                ClickableSpan[] link = buffer.getSpans(off, off,
-                        ClickableSpan.class);
-                BackgroundColorSpan[] bgColors = buffer.getSpans(off, off, BackgroundColorSpan.class);
-
-                if (link.length != 0) {
-
+                mClickLinks = buffer.getSpans(off, off, ClickableSpan.class);
+                if(mClickLinks.length > 0){
                     // 点击的是Span区域，不要把点击事件传递CommentItemView
                     setPassToTv(false);
-                    if (action == MotionEvent.ACTION_UP) {
-                        link[0].onClick(widget);
-                        Selection.removeSelection(buffer);
-                    } else if (action == MotionEvent.ACTION_DOWN) {
-                        Selection.setSelection(buffer,
-                                buffer.getSpanStart(link[0]),
-                                buffer.getSpanEnd(link[0]));
-                    }
-                } else {
+                    Selection.setSelection(buffer,
+                            buffer.getSpanStart(mClickLinks[0]),
+                            buffer.getSpanEnd(mClickLinks[0]));
+                    mBgSpan = new BackgroundColorSpan(mContext.getResources().getColor(R.color.im_line_color));
+                    buffer.setSpan(mBgSpan,
+                            buffer.getSpanStart(mClickLinks[0]), buffer.getSpanEnd(mClickLinks[0]), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }else{
                     setPassToTv(true);
-                    if (action == MotionEvent.ACTION_UP) {
-                        ((View) widget.getParent())
-                                .setBackgroundResource(R.color.transparent);
-                    } else if (action == MotionEvent.ACTION_DOWN) {
-                        // 点击选中效果
-                        ((View) widget.getParent())
-                                .setBackgroundResource(R.color.adapter_item_phone_selector_color);
-                    } else {
-                        ((View) widget.getParent())
-                                .setBackgroundResource(R.color.transparent);
-                    }
-                    Selection.removeSelection(buffer);
+                    // 点击选中效果
+                    ((View) widget.getParent())
+                            .setBackgroundResource(R.color.adapter_item_phone_selector_color);
                 }
-            } else if (action == MotionEvent.ACTION_MOVE) {
 
-            } else {
-                ((View) widget.getParent())
-                        .setBackgroundResource(R.color.transparent);
+            }else if(action == MotionEvent.ACTION_UP){
+                if(mClickLinks.length > 0){
+                    mClickLinks[0].onClick(widget);
+                    if(mBgSpan!=null){
+                        buffer.removeSpan(mBgSpan);
+                    }
+                }
+                Selection.removeSelection(buffer);
+                ((View) widget.getParent()).setBackgroundResource(R.color.transparent);
+            }else if(action == MotionEvent.ACTION_MOVE){
+
+            }else{
+                if(mBgSpan!=null){
+                    buffer.removeSpan(mBgSpan);
+                }
+                ((View) widget.getParent()).setBackgroundResource(R.color.transparent);
             }
             return Touch.onTouchEvent(widget, buffer, event);
         }

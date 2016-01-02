@@ -124,7 +124,10 @@ public class CirclePublicCommentContral {
 		if(mCommentType == ICircleViewUpdateListener.TYPE_REPLY_COMMENT){
 			listviewOffset = listviewOffset + mSelectCommentItemBottom;
 		}
-		mListView.setSelectionFromTop(mCirclePosition, listviewOffset);
+		if(mListView!=null){
+			mListView.setSelectionFromTop(mCirclePosition, listviewOffset);
+		}
+
 	}
 	
 	public void editTextBodyVisible(int visibility) {
