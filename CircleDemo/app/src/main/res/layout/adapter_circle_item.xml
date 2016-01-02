@@ -119,42 +119,17 @@
                 android:background="@drawable/im_distribute_comm_bg"
                 android:orientation="vertical" >
 
-                <LinearLayout
-                    android:id="@+id/digBody"
+                <com.yiw.circledemo.widgets.FavortListView
+                    android:id="@+id/favortListTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/im_ic_dig_tips"
+                    android:drawablePadding="5dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/im_ic_dig_tips"
-                        android:layout_gravity="center_vertical" />
-
-
-                    <ScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:layout_marginLeft="5dip"
-                        android:fadingEdge="none"
-                        android:fillViewport="true"
-                        android:scrollbars="none" >
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="top|left"
-                            android:orientation="vertical" >
-
-                            <com.yiw.circledemo.widgets.custom.CustomListView
-                                android:id="@+id/digList"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content" />
-                        </LinearLayout>
-                    </ScrollView>
-                </LinearLayout>
+                    android:lineSpacingMultiplier="1.1"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_8290AF"
+                    />
 
                 <View 
                     android:id="@+id/lin_dig"

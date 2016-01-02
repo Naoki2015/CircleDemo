@@ -81,7 +81,8 @@ public class CircleMovementMethod extends BaseMovementMethod {
                 mBgSpan = new BackgroundColorSpan(MyApplication.getContext().getResources().getColor(mClickableSpanBgClorId));
                 buffer.setSpan(mBgSpan,
                         buffer.getSpanStart(mClickLinks[0]),
-                        buffer.getSpanEnd(mClickLinks[0]), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        buffer.getSpanEnd(mClickLinks[0]),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }else{
                 setPassToTv(true);
                 // textview选中效果

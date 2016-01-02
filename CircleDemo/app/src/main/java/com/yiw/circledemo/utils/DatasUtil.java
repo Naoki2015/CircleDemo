@@ -43,7 +43,8 @@ public class DatasUtil {
 			"http://v1.qzone.cc/avatar/201308/22/10/36/521579394f4bb419.jpg!200x200.jpg",
 			"http://v1.qzone.cc/avatar/201408/20/17/23/53f468ff9c337550.jpg!200x200.jpg",
 			"http://cdn.duitang.com/uploads/item/201408/13/20140813122725_8h8Yu.jpeg",
-			"http://p2.gexing.com/G1/M00/DA/44/rBACE1Or-q6DO1B3AAAhdSV6v7o914_200x200_3.jpg?recache=20131108" };
+			"http://p2.gexing.com/G1/M00/DA/44/rBACE1Or-q6DO1B3AAAhdSV6v7o914_200x200_3.jpg?recache=20131108",
+			"http://p1.qqyou.com/touxiang/uploadpic/2013-3/12/2013031212295986807.jpg"};
 
 	public static List<User> users = new ArrayList<User>();
 	/**
@@ -66,6 +67,7 @@ public class DatasUtil {
 		User user4 = new User("4", "赵六", HEADIMG[4]);
 		User user5 = new User("5", "田七", HEADIMG[5]);
 		User user6 = new User("6", "Naoki", HEADIMG[6]);
+		User user7 = new User("7", "这个名字是不是很长，哈哈！因为我是用来测试换行的", HEADIMG[7]);
 
 		users.add(curUser);
 		users.add(user1);
@@ -74,6 +76,7 @@ public class DatasUtil {
 		users.add(user4);
 		users.add(user5);
 		users.add(user6);
+		users.add(user7);
 	}
 
 	public static List<CircleItem> createCircleDatas() {

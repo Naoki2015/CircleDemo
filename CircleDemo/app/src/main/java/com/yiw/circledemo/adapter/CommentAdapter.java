@@ -92,13 +92,13 @@ public class CommentAdapter extends BaseAdapter {
         }
 
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(getSpannableString(name));
+        builder.append(getSpannableString(name, 0));
 
         if (!TextUtils.isEmpty(toReplyName)) {
 
             builder.append(" 回复 ");
 
-            builder.append(getSpannableString(toReplyName));
+            builder.append(getSpannableString(toReplyName, 1));
         }
         builder.append(": ");
         //转换表情字符
@@ -122,10 +122,10 @@ public class CommentAdapter extends BaseAdapter {
     }
 
     @NonNull
-    private SpannableString getSpannableString(String textStr) {
+    private SpannableString getSpannableString(String textStr, int position) {
         SpannableString subjectSpanText = new SpannableString(textStr);
         subjectSpanText.setSpan(new NameClickable(new NameClickListener(
-                        subjectSpanText, "")), 0, subjectSpanText.length(),
+                        subjectSpanText, ""), position), 0, subjectSpanText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return subjectSpanText;
     }

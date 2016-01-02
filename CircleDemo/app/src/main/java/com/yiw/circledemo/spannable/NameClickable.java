@@ -13,15 +13,17 @@ import com.yiw.circledemo.R;
  * @date 16/1/2 16:32
  */
 public class NameClickable extends ClickableSpan implements View.OnClickListener {
-    private final View.OnClickListener mListener;
+    private final ISpanClick mListener;
+    private int mPosition;
 
-    public NameClickable(View.OnClickListener l) {
+    public NameClickable(ISpanClick l, int position) {
         mListener = l;
+        mPosition = position;
     }
 
     @Override
     public void onClick(View widget) {
-        mListener.onClick(widget);
+        mListener.onClick(mPosition);
     }
 
     @Override

@@ -1,8 +1,9 @@
 package com.yiw.circledemo.spannable;
 
 import android.text.SpannableString;
-import android.view.View;
 import android.widget.Toast;
+
+import com.yiw.circledemo.MyApplication;
 
 /**
  *
@@ -12,7 +13,7 @@ import android.widget.Toast;
  * @date 2015-01-02 下午3:42:21
  *
  */
-public class NameClickListener implements View.OnClickListener {
+public class NameClickListener implements ISpanClick {
     private SpannableString userName;
     private String userId;
 
@@ -22,7 +23,7 @@ public class NameClickListener implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
-        Toast.makeText(v.getContext(), userName + " &id = " + userId, Toast.LENGTH_SHORT).show();
+    public void onClick(int position) {
+        Toast.makeText(MyApplication.getContext(), userName + " &id = " + userId, Toast.LENGTH_SHORT).show();
     }
 }

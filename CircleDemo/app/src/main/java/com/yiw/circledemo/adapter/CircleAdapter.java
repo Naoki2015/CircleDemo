@@ -12,8 +12,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
 import com.yiw.circledemo.adapter.CommentAdapter.ICommentItemClickListener;
 import com.yiw.circledemo.bean.ActionItem;
@@ -24,12 +26,14 @@ import com.yiw.circledemo.bean.User;
 import com.yiw.circledemo.contral.CirclePublicCommentContral;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
 import com.yiw.circledemo.mvp.view.ICircleViewUpdateListener;
+import com.yiw.circledemo.spannable.ISpanClick;
 import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.widgets.AppNoScrollerListView;
 import com.yiw.circledemo.widgets.CircularImage;
+import com.yiw.circledemo.widgets.FavortListAdapter;
+import com.yiw.circledemo.widgets.FavortListView;
 import com.yiw.circledemo.widgets.MultiImageView;
 import com.yiw.circledemo.widgets.SnsPopupWindow;
-import com.yiw.circledemo.widgets.custom.CustomListView;
 import com.yiw.circledemo.widgets.dialog.CommentDialog;
 
 import java.util.ArrayList;
@@ -149,22 +153,20 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 			holder.timeTv = (TextView) convertView.findViewById(R.id.timeTv);
 			holder.deleteBtn = (TextView) convertView.findViewById(R.id.deleteBtn);
 			holder.snsBtn = (ImageView) convertView.findViewById(R.id.snsBtn);
+			holder.favortListTv = (FavortListView) convertView.findViewById(R.id.favortListTv);
 
 			holder.digCommentBody = (LinearLayout) convertView.findViewById(R.id.digCommentBody);
-			holder.digBody = (LinearLayout) convertView.findViewById(R.id.digBody);
 
-			holder.digList = (CustomListView) convertView.findViewById(R.id.digList);
 			holder.commentList = (AppNoScrollerListView) convertView.findViewById(R.id.commentList);
 
-			holder.digList.setDividerHeight(5);
-			holder.digList.setDividerWidth(3);
-
 			holder.bbsAdapter = new CommentAdapter(mContext);
-			holder.favortAdapter = new FavortAdapter(mContext);
+			holder.favortListAdapter = new FavortListAdapter();
 
-			holder.digList.setAdapter(holder.favortAdapter);
-			holder.digList.setOnItemClickListener(null);
+			holder.favortListTv.setAdapter(holder.favortListAdapter);
 			holder.commentList.setAdapter(holder.bbsAdapter);
+
+			holder.snsPopupWindow = new SnsPopupWindow(mContext);
+
 			convertView.setTag(holder);
 		}else{
 			holder = (ViewHolder) convertView.getTag();
@@ -176,7 +178,7 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 		String headImg = circleItem.getUser().getHeadUrl();
 		String content = circleItem.getContent();
 		String createTime = circleItem.getCreateTime();
-		List<FavortItem> favortDatas = circleItem.getFavorters();
+		final List<FavortItem> favortDatas = circleItem.getFavorters();
 		final List<CommentItem> commentsDatas = circleItem.getComments();
 		boolean hasFavort = circleItem.hasFavort();
 		boolean hasComment = circleItem.hasComment();
@@ -198,11 +200,19 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 		});
 		if(hasFavort || hasComment){
 			if(hasFavort){//处理点赞列表
-				holder.favortAdapter.setDatas(favortDatas);
-				holder.favortAdapter.notifyDataSetChanged();
-				holder.digBody.setVisibility(View.VISIBLE);
+				holder.favortListTv.setSpanClickListener(new ISpanClick() {
+					@Override
+					public void onClick(int position) {
+						String userName = favortDatas.get(position).getUser().getName();
+						String userId = favortDatas.get(position).getUser().getId();
+						Toast.makeText(MyApplication.getContext(), userName + " &id = " + userId, Toast.LENGTH_SHORT).show();
+					}
+				});
+				holder.favortListAdapter.setDatas(favortDatas);
+				holder.favortListAdapter.notifyDataSetChanged();
+				holder.favortListTv.setVisibility(View.VISIBLE);
 			}else{
-				holder.digBody.setVisibility(View.GONE);
+				holder.favortListTv.setVisibility(View.GONE);
 			}
 			if(hasComment){//处理评论列表
 				holder.bbsAdapter.setDatasource(commentsDatas);
@@ -246,7 +256,7 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 			holder.digLine.setVisibility(View.GONE);
 		}
 		
-		final SnsPopupWindow snsPopupWindow = new SnsPopupWindow(mContext);
+		final SnsPopupWindow snsPopupWindow = holder.snsPopupWindow;
 		//判断是否已点赞
 		String curUserFavortId = circleItem.getCurUserFavortId(DatasUtil.curUser.getId());
 		if(!TextUtils.isEmpty(curUserFavortId)){
@@ -263,6 +273,7 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 				snsPopupWindow.showPopupWindow(view);
 			}
 		});
+
 		holder.urlTipTv.setVisibility(View.GONE);
 		switch (itemViewType) {
 		case ITEM_VIEW_TYPE_URL:// 处理链接动态的链接内容和和图片
@@ -297,13 +308,13 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 		public TextView timeTv;
 		public TextView deleteBtn;
 		public ImageView snsBtn;
+		/** 点赞列表*/
+		public FavortListView favortListTv;
 		
 		public LinearLayout urlBody;
 		public LinearLayout digCommentBody;
-		public LinearLayout digBody;
 		public View digLine;
-		/** 点赞列表*/
-		public CustomListView digList;
+
 		/** 评论列表 */
 		public AppNoScrollerListView commentList;
 		/** 链接的图片 */
@@ -313,7 +324,7 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 		/** 图片*/
 		public MultiImageView multiImageView;
 		// ===========================
-		public FavortAdapter favortAdapter;
+		public FavortListAdapter favortListAdapter;
 		public CommentAdapter bbsAdapter;
 		public SnsPopupWindow snsPopupWindow;
 	}
