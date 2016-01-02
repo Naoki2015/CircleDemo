@@ -132,6 +132,7 @@
                         android:src="@drawable/im_ic_dig_tips"
                         android:layout_gravity="center_vertical" />
 
+
                     <ScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -175,7 +176,7 @@
                     android:fastScrollEnabled="false"
                     android:footerDividersEnabled="false"
                     android:headerDividersEnabled="false"
-                    android:listSelector="@drawable/voip_selector_adapter_item_phone_bg"
+                    android:listSelector="@drawable/selector_adapter_item_bg"
                      />
             </LinearLayout>
         </LinearLayout>

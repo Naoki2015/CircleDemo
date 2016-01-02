@@ -1,6 +1,8 @@
 package com.yiw.circledemo;
 
-import java.io.File;
+import android.app.Application;
+import android.content.Context;
+import android.os.Environment;
 
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
@@ -8,8 +10,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import android.app.Application;
-import android.os.Environment;
+import java.io.File;
 /**
  * 
 * @ClassName: MyApplication 
@@ -24,10 +25,16 @@ public class MyApplication extends Application {
 				+ File.separator;
 
 	public static int mKeyBoardH = 0;
+	private static Context mContext;
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		mContext = getApplicationContext();
 		initImageLoader();
+	}
+
+	public static Context getContext(){
+		return mContext;
 	}
 	
 	/** 初始化imageLoader */

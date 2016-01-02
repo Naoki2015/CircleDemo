@@ -1,20 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "23.0.0 rc3"
-
+    compileSdkVersion 15
+    buildToolsVersion '21.1.2'
     defaultConfig {
         applicationId "com.yiw.circledemo"
-        minSdkVersion 8
+        minSdkVersion 11
         targetSdkVersion 21
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+    }
+    productFlavors {
     }
 }
 

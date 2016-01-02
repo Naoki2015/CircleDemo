@@ -6,7 +6,7 @@
     <color name="im_social_dig_name_bg">#DDDDDD</color>
     <color name="im_font_color_text_hint">#abb1b6</color>
     <color name="im_line_color">#dadada</color>
-    <color name="adapter_item_phone_selector_color">#cccccc</color>
+    <color name="name_selector_color">#cccccc</color>
     <color name="transparent">#00000000</color>
     
 </resources>
