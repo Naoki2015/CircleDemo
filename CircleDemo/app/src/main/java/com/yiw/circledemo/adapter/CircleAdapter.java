@@ -25,12 +25,11 @@ import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.bean.User;
 import com.yiw.circledemo.contral.CirclePublicCommentContral;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
-import com.yiw.circledemo.mvp.view.ICircleViewUpdateListener;
+import com.yiw.circledemo.mvp.view.ICircleViewUpdate;
 import com.yiw.circledemo.spannable.ISpanClick;
 import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.widgets.AppNoScrollerListView;
 import com.yiw.circledemo.widgets.CircularImage;
-import com.yiw.circledemo.widgets.FavortListAdapter;
 import com.yiw.circledemo.widgets.FavortListView;
 import com.yiw.circledemo.widgets.MultiImageView;
 import com.yiw.circledemo.widgets.SnsPopupWindow;
@@ -46,7 +45,7 @@ import java.util.List;
 * @date 2015-12-28 上午09:37:23 
 *
  */
-public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListener{
+public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 	private static final int ITEM_VIEW_TYPE_DEFAULT = 0;
 	private static final int ITEM_VIEW_TYPE_URL = 1;
 	private static final int ITEM_VIEW_TYPE_IMAGE = 2;
@@ -60,7 +59,7 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 	private CirclePresenter mPresenter;
 	private CirclePublicCommentContral mCirclePublicCommentContral;
 	private List<CircleItem> datas = new ArrayList<CircleItem>();
-	
+
 	public void setmCirclePublicCommentContral(
 			CirclePublicCommentContral mCirclePublicCommentContral) {
 		this.mCirclePublicCommentContral = mCirclePublicCommentContral;
@@ -186,6 +185,8 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 		holder.nameTv.setText(name);
 		holder.timeTv.setText(createTime);
 		holder.contentTv.setText(content);
+        holder.contentTv.setVisibility(TextUtils.isEmpty(content) ? View.GONE : View.VISIBLE);
+
 		if(DatasUtil.curUser.getId().equals(circleItem.getUser().getId())){
 			holder.deleteBtn.setVisibility(View.VISIBLE);
 		}else{
@@ -219,11 +220,14 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 				holder.bbsAdapter.setCommentClickListener(new ICommentItemClickListener() {
 					@Override
 					public void onItemClick(int commentPosition) {
+
 						CommentItem commentItem = commentsDatas.get(commentPosition);
 						if(DatasUtil.curUser.getId().equals(commentItem.getUser().getId())){//复制或者删除自己的评论
+
 							CommentDialog dialog = new CommentDialog(mContext, mPresenter, commentItem, position);
 							dialog.show();
 						}else{//回复别人的评论
+
 							if(mCirclePublicCommentContral!=null){
 								mCirclePublicCommentContral.editTextBodyVisible(View.VISIBLE, mPresenter, position, TYPE_REPLY_COMMENT, commentItem.getUser(), commentPosition);
 							}
@@ -236,6 +240,7 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 				holder.commentList.setOnItemLongClickListener(new OnItemLongClickListener() {
 					@Override
 					public boolean onItemLongClick(AdapterView<?> arg0, View view, final int commentPosition, long id) {
+
 						//长按进行复制或者删除
 						CommentItem commentItem = commentsDatas.get(commentPosition);
 						CommentDialog dialog = new CommentDialog(mContext, mPresenter, commentItem, position);
@@ -244,18 +249,16 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 					}
 				});
 			}else {
+
 				holder.commentList.setVisibility(View.GONE);
 			}
 			holder.digCommentBody.setVisibility(View.VISIBLE);
 		}else{
 			holder.digCommentBody.setVisibility(View.GONE);
 		}
-		if(hasFavort && hasComment){
-			holder.digLine.setVisibility(View.VISIBLE);
-		}else{
-			holder.digLine.setVisibility(View.GONE);
-		}
-		
+
+		holder.digLine.setVisibility(hasFavort && hasComment ? View.VISIBLE : View.GONE);
+
 		final SnsPopupWindow snsPopupWindow = holder.snsPopupWindow;
 		//判断是否已点赞
 		String curUserFavortId = circleItem.getCurUserFavortId(DatasUtil.curUser.getId());
@@ -335,11 +338,13 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdateListe
 		private int mCirclePosition;
 		private long mLasttime = 0;
 		private CircleItem mCircleItem;
+
 		public PopupItemClickListener(int circlePosition, CircleItem circleItem, String favorId){
 			this.mFavorId = favorId;
 			this.mCirclePosition = circlePosition;
 			this.mCircleItem = circleItem;
 		}
+
 		@Override
 		public void onItemClick(ActionItem actionitem, int position) {
 			switch (position) {

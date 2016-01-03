@@ -3,7 +3,7 @@ package com.yiw.circledemo.mvp.presenter;
 import com.yiw.circledemo.bean.User;
 import com.yiw.circledemo.mvp.modle.CircleModel;
 import com.yiw.circledemo.mvp.modle.IDataRequestListener;
-import com.yiw.circledemo.mvp.view.ICircleViewUpdateListener;
+import com.yiw.circledemo.mvp.view.ICircleViewUpdate;
 /**
  * 
 * @ClassName: CirclePresenter 
@@ -14,9 +14,9 @@ import com.yiw.circledemo.mvp.view.ICircleViewUpdateListener;
  */
 public class CirclePresenter {
 	private CircleModel mCircleModel;
-	private ICircleViewUpdateListener mCircleView;
+	private ICircleViewUpdate mCircleView;
 	
-	public CirclePresenter(ICircleViewUpdateListener view){
+	public CirclePresenter(ICircleViewUpdate view){
 		this.mCircleView = view;
 		mCircleModel = new CircleModel();
 	}

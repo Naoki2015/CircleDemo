@@ -1,9 +1,10 @@
-package com.yiw.circledemo.widgets;
+package com.yiw.circledemo.adapter;
 
 import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 
 import com.yiw.circledemo.MyApplication;
@@ -11,6 +12,7 @@ import com.yiw.circledemo.R;
 import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.spannable.CircleMovementMethod;
 import com.yiw.circledemo.spannable.NameClickable;
+import com.yiw.circledemo.widgets.FavortListView;
 
 import java.util.List;
 
@@ -60,12 +62,13 @@ public class FavortListAdapter {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         if(datas != null && datas.size() > 0){
             //添加点赞图标
-            //builder.append(setImgSpannable());
+            builder.append(setImageSpan());
+            //builder.append("  ");
             FavortItem item = null;
             for (int i=0; i<datas.size(); i++){
                 item = datas.get(i);
                 if(item != null){
-                    builder.append(getSpannableString(item.getUser().getName(), i));
+                    builder.append(setClickableSpan(item.getUser().getName(), i));
                     if(i != datas.size()-1){
                         builder.append(", ");
                     }
@@ -78,18 +81,18 @@ public class FavortListAdapter {
     }
 
     @NonNull
-    private SpannableString getSpannableString(String textStr, int position) {
+    private SpannableString setClickableSpan(String textStr, int position) {
         SpannableString subjectSpanText = new SpannableString(textStr);
         subjectSpanText.setSpan(new NameClickable(mListView.getSpanClickListener(), position), 0, subjectSpanText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return subjectSpanText;
     }
 
-    private SpannableString setImgSpannable(){
-        String text = " ";
+    private SpannableString setImageSpan(){
+        String text = "  ";
         SpannableString imgSpanText = new SpannableString(text);
-        imgSpanText.setSpan(new ImageSpan(MyApplication.getContext(), R.drawable.im_ic_dig_tips),
-                0 ,text.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        imgSpanText.setSpan(new ImageSpan(MyApplication.getContext(), R.drawable.im_ic_dig_tips, DynamicDrawableSpan.ALIGN_BASELINE),
+                0 , 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return imgSpanText;
     }
 }

@@ -12,7 +12,7 @@ import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
 import com.yiw.circledemo.bean.User;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
-import com.yiw.circledemo.mvp.view.ICircleViewUpdateListener;
+import com.yiw.circledemo.mvp.view.ICircleViewUpdate;
 import com.yiw.circledemo.utils.CommonUtils;
 import com.yiw.circledemo.widgets.AppNoScrollerListView;
 /**
@@ -93,7 +93,7 @@ public class CirclePublicCommentContral {
 			View selectCircleItem = mListView.getChildAt(mCirclePosition-firstPosition);
 			mSelectCircleItemH = selectCircleItem.getHeight();
 			
-			if(commentType == ICircleViewUpdateListener.TYPE_REPLY_COMMENT){//回复评论的情况
+			if(commentType == ICircleViewUpdate.TYPE_REPLY_COMMENT){//回复评论的情况
 				AppNoScrollerListView commentLv = (AppNoScrollerListView) selectCircleItem.findViewById(R.id.commentList);
 				if(commentLv!=null){
 					int firstCommentPosition = commentLv.getFirstVisiblePosition();
@@ -121,7 +121,7 @@ public class CirclePublicCommentContral {
 		int screenlH = ((MainActivity)mContext).getScreenHeight();//整个应用屏幕的高度
 		int listviewOffset = screenlH - mSelectCircleItemH - keyH - editTextBodyH;
 		Log.d(TAG, "offset="+listviewOffset + " &mSelectCircleItemH="+mSelectCircleItemH + " &keyH="+keyH + " &editTextBodyH="+editTextBodyH);
-		if(mCommentType == ICircleViewUpdateListener.TYPE_REPLY_COMMENT){
+		if(mCommentType == ICircleViewUpdate.TYPE_REPLY_COMMENT){
 			listviewOffset = listviewOffset + mSelectCommentItemBottom;
 		}
 		if(mListView!=null){

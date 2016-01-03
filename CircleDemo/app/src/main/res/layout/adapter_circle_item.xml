@@ -123,8 +123,6 @@
                     android:id="@+id/favortListTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/im_ic_dig_tips"
-                    android:drawablePadding="5dp"
                     android:gravity="center_vertical"
                     android:lineSpacingMultiplier="1.1"
                     android:textSize="14sp"

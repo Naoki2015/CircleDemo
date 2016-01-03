@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import com.yiw.circledemo.adapter.FavortListAdapter;
 import com.yiw.circledemo.spannable.ISpanClick;
 
 /**

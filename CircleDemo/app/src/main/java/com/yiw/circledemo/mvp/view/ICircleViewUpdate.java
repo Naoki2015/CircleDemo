@@ -9,7 +9,7 @@ import com.yiw.circledemo.bean.User;
 * @date 2015-12-28 下午4:13:04 
 *
  */
-public interface ICircleViewUpdateListener {
+public interface ICircleViewUpdate {
 	/**
 	 * 发布评论
 	 */
