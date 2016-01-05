@@ -39,8 +39,8 @@ public class MyApplication extends Application {
 	
 	/** 初始化imageLoader */
 	private void initImageLoader() {
-		DisplayImageOptions options = new DisplayImageOptions.Builder().showImageForEmptyUri(R.drawable.im_skin_icon_imageload_default)
-				.showImageOnFail(R.drawable.im_skin_icon_imageload_failed).showImageOnLoading(R.drawable.im_skin_icon_imageload_default).cacheInMemory(true)
+		DisplayImageOptions options = new DisplayImageOptions.Builder().showImageForEmptyUri(R.color.bg_no_photo)
+				.showImageOnFail(R.color.bg_no_photo).showImageOnLoading(R.color.bg_no_photo).cacheInMemory(true)
 				.cacheOnDisk(true).build();
 
 		File cacheDir = new File(DEFAULT_SAVE_IMAGE_PATH);
