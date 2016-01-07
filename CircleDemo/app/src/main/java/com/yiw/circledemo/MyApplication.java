@@ -44,10 +44,16 @@ public class MyApplication extends Application {
 				.cacheOnDisk(true).build();
 
 		File cacheDir = new File(DEFAULT_SAVE_IMAGE_PATH);
-		ImageLoaderConfiguration imageconfig = new ImageLoaderConfiguration.Builder(this).threadPriority(Thread.NORM_PRIORITY - 2)
-				.denyCacheImageMultipleSizesInMemory().diskCacheSize(50 * 1024 * 1024).diskCacheFileCount(200).diskCache(new UnlimitedDiskCache(cacheDir))
-				.diskCacheFileNameGenerator(new Md5FileNameGenerator()).defaultDisplayImageOptions(options).build();
+		ImageLoaderConfiguration imageconfig = new ImageLoaderConfiguration.Builder(this)
+				.threadPriority(Thread.NORM_PRIORITY - 2)
+				.denyCacheImageMultipleSizesInMemory()
+				.diskCacheSize(50 * 1024 * 1024)
+				.diskCacheFileCount(200)
+				.diskCache(new UnlimitedDiskCache(cacheDir))
+				.diskCacheFileNameGenerator(new Md5FileNameGenerator())
+				.defaultDisplayImageOptions(options).build();
 
 		ImageLoader.getInstance().init(imageconfig);
 	}
+
 }

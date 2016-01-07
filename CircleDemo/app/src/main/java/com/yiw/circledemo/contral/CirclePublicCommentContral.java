@@ -87,12 +87,16 @@ public class CirclePublicCommentContral {
 		this.mReplyUser = replyUser;
 		this.mCommentPosition = commentPosition;
 		editTextBodyVisible(visibility);
-		
-		if(mListView!=null){
+
+		measure(mCirclePosition, commentType);
+	}
+
+	private void measure(int mCirclePosition, int commentType) {
+		if(mListView != null){
 			int firstPosition = mListView.getFirstVisiblePosition();
 			View selectCircleItem = mListView.getChildAt(mCirclePosition-firstPosition);
 			mSelectCircleItemH = selectCircleItem.getHeight();
-			
+
 			if(commentType == ICircleViewUpdate.TYPE_REPLY_COMMENT){//回复评论的情况
 				AppNoScrollerListView commentLv = (AppNoScrollerListView) selectCircleItem.findViewById(R.id.commentList);
 				if(commentLv!=null){

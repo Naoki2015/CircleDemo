@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.yiw.circledemo.ImagePagerActivity;
 import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
 import com.yiw.circledemo.adapter.CommentAdapter.ICommentItemClickListener;
@@ -288,10 +290,17 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 			holder.urlTipTv.setVisibility(View.VISIBLE);
 			break;
 		case ITEM_VIEW_TYPE_IMAGE:// 处理图片
-			List<String> photos = circleItem.getPhotos();
+			final List<String> photos = circleItem.getPhotos();
 			if (photos != null && photos.size() > 0) {
 				holder.multiImageView.setVisibility(View.VISIBLE);
-				holder.multiImageView.setList(photos, MultiImageView.MAX_WIDTH);
+				holder.multiImageView.setList(photos);
+				holder.multiImageView.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
+					@Override
+					public void onItemClick(View view, int position) {
+						ImagePagerActivity.imageSize = new ImageSize(view.getWidth(), view.getHeight());
+						ImagePagerActivity.startImagePagerActivity(mContext, photos, position);
+					}
+				});
 			} else {
 				holder.multiImageView.setVisibility(View.GONE);
 			}

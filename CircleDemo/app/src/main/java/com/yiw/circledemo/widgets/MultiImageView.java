@@ -1,7 +1,5 @@
 package com.yiw.circledemo.widgets;
 
-import java.util.List;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,6 +9,8 @@ import android.widget.LinearLayout;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.yiw.circledemo.utils.DensityUtil;
+
+import java.util.List;
 
 /**
  * @ClassName MultiImageView.java
@@ -37,6 +37,11 @@ public class MultiImageView extends LinearLayout {
 	private LayoutParams morePara;
 	private LayoutParams rowPara;
 
+	private OnItemClickListener mOnItemClickListener;
+	public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+		mOnItemClickListener = onItemClickListener;
+	}
+
 	public MultiImageView(Context context) {
 		super(context);
 	}
@@ -45,28 +50,31 @@ public class MultiImageView extends LinearLayout {
 		super(context, attrs);
 	}
 
-	public void setList(List<String> lists, int width) throws IllegalArgumentException{
+	public void setList(List<String> lists) throws IllegalArgumentException{
 		if(lists==null){
 			throw new IllegalArgumentException("imageList is null...");
 		}
 		imagesList = lists;
 		
-		if(width>0){
-			pxMoreWandH = width/3 - pxImagePadding;
-			pxOneWidth = width/2;
-			pxOneHeight = width*2/3;
-			initVariable();
+		if(MAX_WIDTH > 0){
+			pxMoreWandH = MAX_WIDTH/3 - pxImagePadding;
+			pxOneWidth = MAX_WIDTH/2;
+			pxOneHeight = MAX_WIDTH*2/3;
+			initImageLayoutParams();
 		}
+
 		initView();
 	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		if(MAX_WIDTH==0){
+		if(MAX_WIDTH == 0){
 			int width = measureWidth(widthMeasureSpec);
 			if(width>0){
 				MAX_WIDTH = width;
-				setList(imagesList,width);
+				if(imagesList!=null && imagesList.size()>0){
+					setList(imagesList);
+				}
 			}
 		}
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -100,37 +108,7 @@ public class MultiImageView extends LinearLayout {
 		return result;
 	}
 
-	/**
-	 * Determines the height of this view
-	 * 
-	 * @param measureSpec
-	 *            A measureSpec packed into an int
-	 * @return The height of the view, honoring constraints from measureSpec
-	 */
-	/*private int measureHeight(int measureSpec) {
-		int result = 0;
-		int specMode = MeasureSpec.getMode(measureSpec);
-		int specSize = MeasureSpec.getSize(measureSpec);
-
-		// mAscent = (int) mTextPaint.ascent();
-		if (specMode == MeasureSpec.EXACTLY) {
-			// We were told how big to be
-			result = specSize;
-		} else {
-			// Measure the text (beware: ascent is a negative number)
-			// result = (int) (-mAscent + mTextPaint.descent()) +
-			// getPaddingTop()
-			// + getPaddingBottom();
-			if (specMode == MeasureSpec.AT_MOST) {
-				// Respect AT_MOST value if that was what is called for by
-				// measureSpec
-				result = Math.min(result, specSize);
-			}
-		}
-		return result;
-	}*/
-
-	private void initVariable() {
+	private void initImageLayoutParams() {
 
 		onePicPara = new LayoutParams(pxOneWidth, pxOneHeight);
 
@@ -165,19 +143,16 @@ public class MultiImageView extends LinearLayout {
 				imageView.setMinimumWidth(pxMoreWandH);
 				imageView.setScaleType(ScaleType.CENTER_CROP);
 				ImageLoader.getInstance().displayImage(url, imageView);
-				//Drawable drawable = imageView.getDrawable();
-				//获取图片的真实宽高，如果宽>高,则宽取最大宽度的2/3；如果宽<高,则宽取最大宽度的一半；高怎按比例计算出来。
-				//drawable.getIntrinsicWidth();
 
 				int position = 0;
 				imageView.setTag(position);
-				imageView.setOnClickListener(ImageViewOnClickListener);
+				imageView.setOnClickListener(mImageViewOnClickListener);
 				addView(imageView);
 			}
 
 		} else {
 			int allCount = imagesList.size();
-			if(allCount==4){
+			if(allCount == 4){
 				MAX_PER_ROW_COUNT = 2;
 			}else{
 				MAX_PER_ROW_COUNT = 3;
@@ -212,7 +187,7 @@ public class MultiImageView extends LinearLayout {
 					ImageLoader.getInstance().displayImage(thumbUrl, imageView);
 					
 					imageView.setTag(position);
-					imageView.setOnClickListener(ImageViewOnClickListener);
+					imageView.setOnClickListener(mImageViewOnClickListener);
 
 					rowLayout.addView(imageView);
 				}
@@ -221,22 +196,17 @@ public class MultiImageView extends LinearLayout {
 	}
 
 	// 图片点击事件
-	private View.OnClickListener ImageViewOnClickListener = new OnClickListener() {
+	private View.OnClickListener mImageViewOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View view) {
-//			int position = (Integer) view.getTag();
-//			Intent photoViewIntent = new Intent(getContext(), PhotoViewActivity.class);
-//			ArrayList<String> picUrls = new ArrayList<String>();
-//			picUrls.addAll(imagesList);
-//			
-//			photoViewIntent.putStringArrayListExtra("picUrls", picUrls);
-//			photoViewIntent.putExtra("initIndex", position);
-//			
-//			photoViewIntent.putExtra(PhotoViewActivity.EXTRA_OPEN_LONG_CLICK_ACTION, true);
-//			photoViewIntent.putExtra(PhotoViewActivity.EXTRA_LONG_CLICK_IMAGE_SAVE_FILE_NAME, Constants.ROOT);
-//			getContext().startActivity(photoViewIntent);
+			if(mOnItemClickListener != null){
+				mOnItemClickListener.onItemClick(view, (int)view.getTag());
+			}
 		}
 	};
 
+	public interface OnItemClickListener{
+		public void onItemClick(View view, int position);
+	}
 }
