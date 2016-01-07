@@ -158,7 +158,7 @@ public class ImagePagerActivity extends Activity{
                 ImageLoader.getInstance().displayImage(imgurl, imageView, options, new SimpleImageLoadingListener(){
                     @Override
                     public void onLoadingStarted(String imageUri, View view) {
-
+                        //获取内存中的缩略图
                         String memoryCacheKey = MemoryCacheUtils.generateKey(imageUri, imageSize);
                         Bitmap bmp = ImageLoader.getInstance().getMemoryCache().get(memoryCacheKey);
                         if(bmp != null && !bmp.isRecycled()){
