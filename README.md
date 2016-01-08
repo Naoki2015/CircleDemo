@@ -4,6 +4,6 @@
 图片显示规则类似微信朋友圈的排列
 
 
-![image](https://github.com/Naoki2015/CircleDemo/blob/master/CircleDemo/imgs/1.png)
-![image](https://github.com/Naoki2015/CircleDemo/blob/master/CircleDemo/imgs/2.png)
-![image](https://github.com/Naoki2015/CircleDemo/blob/master/CircleDemo/imgs/3.png)
+![image]()
+![image]()
+![image]()
