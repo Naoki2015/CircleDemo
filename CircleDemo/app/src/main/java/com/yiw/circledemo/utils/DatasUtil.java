@@ -27,6 +27,7 @@ public class DatasUtil {
 			"http://b.hiphotos.baidu.com/image/pic/item/a71ea8d3fd1f4134e61e0f90211f95cad1c85e36.jpg",
 			"http://c.hiphotos.baidu.com/image/pic/item/7dd98d1001e939011b9c86d07fec54e737d19645.jpg",
 			"http://f.hiphotos.baidu.com/image/pic/item/f11f3a292df5e0fecc3e83ef586034a85edf723d.jpg",
+			"http://cdn.duitang.com/uploads/item/201309/17/20130917111400_CNmTr.thumb.224_0.png",
 			"http://pica.nipic.com/2007-10-17/20071017111345564_2.jpg",
 			"http://pic4.nipic.com/20091101/3672704_160309066949_2.jpg",
 			"http://pic4.nipic.com/20091203/1295091_123813163959_2.jpg",
@@ -43,7 +44,7 @@ public class DatasUtil {
 			"http://v1.qzone.cc/avatar/201308/22/10/36/521579394f4bb419.jpg!200x200.jpg",
 			"http://v1.qzone.cc/avatar/201408/20/17/23/53f468ff9c337550.jpg!200x200.jpg",
 			"http://cdn.duitang.com/uploads/item/201408/13/20140813122725_8h8Yu.jpeg",
-			"http://p2.gexing.com/G1/M00/DA/44/rBACE1Or-q6DO1B3AAAhdSV6v7o914_200x200_3.jpg?recache=20131108",
+			"http://img.woyaogexing.com/touxiang/nv/20140212/9ac2117139f1ecd8%21200x200.jpg",
 			"http://p1.qqyou.com/touxiang/uploadpic/2013-3/12/2013031212295986807.jpg"};
 
 	public static List<User> users = new ArrayList<User>();

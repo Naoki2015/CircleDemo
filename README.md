@@ -7,3 +7,5 @@
 ![image](https://github.com/Naoki2015/CircleDemo/blob/master/CircleDemo/imgs/01.png)
 ![image](https://github.com/Naoki2015/CircleDemo/blob/master/CircleDemo/imgs/02.png)
 ![image](https://github.com/Naoki2015/CircleDemo/blob/master/CircleDemo/imgs/03.png)
+![image](https://github.com/hnclca/CircleDemo/blob/master/CircleDemo/imgs/onepic.png)
+![image](https://github.com/hnclca/CircleDemo/blob/master/CircleDemo/imgs/smallpic.png)
