@@ -3,8 +3,8 @@
 
 图片显示规则类似微信朋友圈的排列
 
-16/02/26
-非常感谢hnclca增加图片点击效果
+## 16/02/26
+非常感谢[hnclca](https://github.com/hnclca)增加图片点击效果
 
 
 ![image](https://github.com/Naoki2015/CircleDemo/blob/master/CircleDemo/imgs/01.png)
