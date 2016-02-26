@@ -2,6 +2,7 @@ package com.yiw.circledemo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -96,17 +97,21 @@ public class MainActivity extends Activity implements OnRefreshListener{
 			@Override
             public void onGlobalLayout() {
             	
-                //Rect r = new Rect();
-                //mSwipeRefreshLayout.getWindowVisibleDisplayFrame(r);
+                Rect r = new Rect();
+                mSwipeRefreshLayout.getWindowVisibleDisplayFrame(r);
 				int statusBarH =  getStatusBarHeight();//状态栏高度
                 int screenH = mSwipeRefreshLayout.getRootView().getHeight();
-                int keyH = screenH - statusBarH /*screenH - (r.bottom - r.top)*/;
-                if(keyH == MyApplication.mKeyBoardH){//有变化时才处理，否则会陷入死循环
+				if(r.top != statusBarH ){
+					//在这个demo中r.top代表的是状态栏高度，在沉浸式状态栏时r.top＝0，通过getStatusBarHeight获取状态栏高度
+					r.top = statusBarH;
+				}
+                int keyboardH = screenH - (r.bottom - r.top);
+				Log.d(TAG, "keyboardH = " + keyboardH + " &r.bottom=" + r.bottom + " &top=" + r.top + " &statusBarH=" + statusBarH);
+                if(keyboardH == MyApplication.mKeyBoardH){//有变化时才处理，否则会陷入死循环
                 	return;
                 }
 
-                Log.d(TAG, "keyH = " + keyH + " &r.bottom=" /*+ r.bottom + " &top=" + r.top*/ + " &statusBarH=" + statusBarH);
-                MyApplication.mKeyBoardH = keyH;
+                MyApplication.mKeyBoardH = keyboardH;
             	mScreenHeight = screenH;//应用屏幕的高度
             	mEditTextBodyHeight = mEditTextBody.getHeight();
             	if(mCirclePublicCommentContral != null){
