@@ -1,10 +1,7 @@
 package com.yiw.circledemo;
 
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -26,6 +23,8 @@ import com.yiw.circledemo.contral.CirclePublicCommentContral;
 import com.yiw.circledemo.listener.SwpipeListViewOnScrollListener;
 import com.yiw.circledemo.utils.CommonUtils;
 import com.yiw.circledemo.utils.DatasUtil;
+
+import java.util.List;
 /**
  * 
 * @ClassName: MainActivity 
@@ -97,14 +96,16 @@ public class MainActivity extends Activity implements OnRefreshListener{
 			@Override
             public void onGlobalLayout() {
             	
-                Rect r = new Rect();
-                mSwipeRefreshLayout.getWindowVisibleDisplayFrame(r);
+                //Rect r = new Rect();
+                //mSwipeRefreshLayout.getWindowVisibleDisplayFrame(r);
+				int statusBarH =  getStatusBarHeight();//状态栏高度
                 int screenH = mSwipeRefreshLayout.getRootView().getHeight();
-                int keyH = screenH - (r.bottom - r.top);
+                int keyH = screenH - statusBarH /*screenH - (r.bottom - r.top)*/;
                 if(keyH == MyApplication.mKeyBoardH){//有变化时才处理，否则会陷入死循环
                 	return;
                 }
-                Log.d(TAG, "keyH = " + keyH + " &r.bottom=" + r.bottom + " &top=" + r.top);
+
+                Log.d(TAG, "keyH = " + keyH + " &r.bottom=" /*+ r.bottom + " &top=" + r.top*/ + " &statusBarH=" + statusBarH);
                 MyApplication.mKeyBoardH = keyH;
             	mScreenHeight = screenH;//应用屏幕的高度
             	mEditTextBodyHeight = mEditTextBody.getHeight();
@@ -113,6 +114,19 @@ public class MainActivity extends Activity implements OnRefreshListener{
             	}
             }
         });
+	}
+
+	/**
+	 * 获取状态栏高度
+	 * @return
+	 */
+	private int getStatusBarHeight() {
+		int result = 0;
+		int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+		if (resourceId > 0) {
+			result = getResources().getDimensionPixelSize(resourceId);
+		}
+		return result;
 	}
 
 	@Override

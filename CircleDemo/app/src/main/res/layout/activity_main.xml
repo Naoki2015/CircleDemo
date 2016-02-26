@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="com.yiw.circledemo.MainActivity" >
 
     <android.support.v4.widget.SwipeRefreshLayout
