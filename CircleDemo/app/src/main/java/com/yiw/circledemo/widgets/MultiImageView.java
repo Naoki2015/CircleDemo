@@ -26,15 +26,14 @@ public class MultiImageView extends LinearLayout {
 	private List<String> imagesList;
 
 	/** 长度 单位为Pixel **/
-	private int pxOneWidth = DensityUtil.dip2px(getContext(), 115);// 单张图时候的宽
-	private int pxOneHeight = DensityUtil.dip2px(getContext(), 150);// 单张图时候的高
+	private int pxOneMaxWandH;  // 单张图最大允许宽高
 	private int pxMoreWandH = 0;// 多张图的宽高
 	private int pxImagePadding = DensityUtil.dip2px(getContext(), 3);// 图片间的间距
 
 	private int MAX_PER_ROW_COUNT = 3;// 每行显示最大数
 
 	private LayoutParams onePicPara;
-	private LayoutParams morePara;
+	private LayoutParams morePara, moreParaColumnFirst;
 	private LayoutParams rowPara;
 
 	private OnItemClickListener mOnItemClickListener;
@@ -57,9 +56,8 @@ public class MultiImageView extends LinearLayout {
 		imagesList = lists;
 		
 		if(MAX_WIDTH > 0){
-			pxMoreWandH = MAX_WIDTH/3 - pxImagePadding;
-			pxOneWidth = MAX_WIDTH/2;
-			pxOneHeight = MAX_WIDTH*2/3;
+			pxMoreWandH = (MAX_WIDTH - pxImagePadding*2 )/3; //解决右侧图片和内容对不齐问题
+			pxOneMaxWandH = MAX_WIDTH * 2 / 3;
 			initImageLayoutParams();
 		}
 
@@ -109,16 +107,16 @@ public class MultiImageView extends LinearLayout {
 	}
 
 	private void initImageLayoutParams() {
-
-		onePicPara = new LayoutParams(pxOneWidth, pxOneHeight);
-
-		morePara = new LayoutParams(pxMoreWandH, pxMoreWandH);
-		morePara.setMargins(0, 0, pxImagePadding, 0);
-
 		int wrap = LayoutParams.WRAP_CONTENT;
 		int match = LayoutParams.MATCH_PARENT;
+
+		onePicPara = new LayoutParams(pxOneMaxWandH, wrap);
+
+		moreParaColumnFirst = new LayoutParams(pxMoreWandH, pxMoreWandH);
+		morePara = new LayoutParams(pxMoreWandH, pxMoreWandH);
+		morePara.setMargins(pxImagePadding, 0, 0, 0);
+
 		rowPara = new LayoutParams(match, wrap);
-		rowPara.setMargins(0, 0, 0, pxImagePadding);
 	}
 
 	// 根据imageView的数量初始化不同的View布局,还要为每一个View作点击效果
@@ -136,20 +134,7 @@ public class MultiImageView extends LinearLayout {
 		}
 
 		if (imagesList.size() == 1) {
-			for (String url : imagesList) {
-				ImageView imageView = new ImageView(getContext());
-				imageView.setId(url.hashCode());// 指定id
-				imageView.setLayoutParams(onePicPara);
-				imageView.setMinimumWidth(pxMoreWandH);
-				imageView.setScaleType(ScaleType.CENTER_CROP);
-				ImageLoader.getInstance().displayImage(url, imageView);
-
-				int position = 0;
-				imageView.setTag(position);
-				imageView.setOnClickListener(mImageViewOnClickListener);
-				addView(imageView);
-			}
-
+				addView(createImageView(0, false));
 		} else {
 			int allCount = imagesList.size();
 			if(allCount == 4){
@@ -164,7 +149,7 @@ public class MultiImageView extends LinearLayout {
 				rowLayout.setOrientation(LinearLayout.HORIZONTAL);
 
 				rowLayout.setLayoutParams(rowPara);
-				if (rowCursor == 0) {
+				if (rowCursor != 0) {
 					rowLayout.setPadding(0, pxImagePadding, 0, 0);
 				}
 
@@ -178,21 +163,30 @@ public class MultiImageView extends LinearLayout {
 				int rowOffset = rowCursor * MAX_PER_ROW_COUNT;// 行偏移
 				for (int columnCursor = 0; columnCursor < columnCount; columnCursor++) {
 					int position = columnCursor + rowOffset;
-					String thumbUrl = imagesList.get(position);
-
-					ImageView imageView = new ImageView(getContext());
-					imageView.setId(thumbUrl.hashCode());// 指定id
-					imageView.setLayoutParams(morePara);
-					imageView.setScaleType(ScaleType.CENTER_CROP);
-					ImageLoader.getInstance().displayImage(thumbUrl, imageView);
-					
-					imageView.setTag(position);
-					imageView.setOnClickListener(mImageViewOnClickListener);
-
-					rowLayout.addView(imageView);
+					rowLayout.addView(createImageView(position, true));
 				}
 			}
 		}
+	}
+
+	private ImageView createImageView(int position, final boolean isMultiImage) {
+		String url = imagesList.get(position);
+		ImageView imageView = new ImageView(getContext());
+		if(isMultiImage){
+			imageView.setScaleType(ScaleType.CENTER_CROP);
+			imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ?moreParaColumnFirst : morePara);
+		}else {
+			imageView.setAdjustViewBounds(true);
+			imageView.setScaleType(ScaleType.FIT_START);
+			imageView.setMaxHeight(pxOneMaxWandH);
+			imageView.setLayoutParams(onePicPara);
+		}
+
+		imageView.setTag(position);
+		imageView.setId(url.hashCode());
+		imageView.setOnClickListener(mImageViewOnClickListener);
+		ImageLoader.getInstance().displayImage(url, imageView);
+		return imageView;
 	}
 
 	// 图片点击事件

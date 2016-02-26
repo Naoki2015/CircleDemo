@@ -297,7 +297,8 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 				holder.multiImageView.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
 					@Override
 					public void onItemClick(View view, int position) {
-						ImagePagerActivity.imageSize = new ImageSize(view.getWidth(), view.getHeight());
+						// 因为单张图片时，图片实际大小是自适应的，imageLoader缓存时是按测量尺寸缓存的
+						ImagePagerActivity.imageSize = new ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
 						ImagePagerActivity.startImagePagerActivity(mContext, photos, position);
 					}
 				});
