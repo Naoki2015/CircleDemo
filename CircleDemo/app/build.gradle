@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 15
+    compileSdkVersion 22
     buildToolsVersion '21.1.2'
     defaultConfig {
         applicationId "com.yiw.circledemo"
@@ -21,4 +21,5 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:22.2.1'
     compile files('libs/universal-image-loader-1.9.4.jar')
+    compile 'com.commit451:PhotoView:1.2.4'
 }

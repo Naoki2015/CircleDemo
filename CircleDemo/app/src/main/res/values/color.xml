@@ -9,6 +9,6 @@
     <color name="name_selector_color">#cccccc</color>
     <color name="transparent">#00000000</color>
     <color name="bg_no_photo">#EEEEEE</color>
-
+    <color name="blue">#5cc3ff</color>
     
 </resources>
