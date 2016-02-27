@@ -29,6 +29,8 @@ import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.senab.photoview.PhotoView;
+
 /**
  * Created by yiw on 2016/1/6.
  */
@@ -138,7 +140,7 @@ public class ImagePagerActivity extends Activity{
         public Object instantiateItem(ViewGroup container, final int position) {
             View view = inflater.inflate(R.layout.item_pager_image, container, false);
             if(view != null){
-                final ImageView imageView = (ImageView) view.findViewById(R.id.image);
+                final PhotoView imageView = (PhotoView) view.findViewById(R.id.image);
                 //预览imageView
                 final ImageView smallImageView = new ImageView(context);
                 FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(imageSize.getWidth(), imageSize.getHeight());
