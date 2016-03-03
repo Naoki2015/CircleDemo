@@ -6,8 +6,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,19 +17,16 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.yiw.circledemo.ImagePagerActivity;
 import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
-import com.yiw.circledemo.adapter.CommentAdapter.ICommentItemClickListener;
 import com.yiw.circledemo.bean.ActionItem;
 import com.yiw.circledemo.bean.CircleItem;
+import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
-import com.yiw.circledemo.bean.User;
-import com.yiw.circledemo.contral.CirclePublicCommentContral;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
-import com.yiw.circledemo.mvp.view.ICircleViewUpdate;
 import com.yiw.circledemo.spannable.ISpanClick;
 import com.yiw.circledemo.utils.DatasUtil;
-import com.yiw.circledemo.widgets.AppNoScrollerListView;
 import com.yiw.circledemo.widgets.CircularImage;
+import com.yiw.circledemo.widgets.CommentListView;
 import com.yiw.circledemo.widgets.FavortListView;
 import com.yiw.circledemo.widgets.MultiImageView;
 import com.yiw.circledemo.widgets.SnsPopupWindow;
@@ -47,7 +42,7 @@ import java.util.List;
 * @date 2015-12-28 上午09:37:23 
 *
  */
-public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
+public class CircleAdapter extends BaseAdapter {
 	private static final int ITEM_VIEW_TYPE_DEFAULT = 0;
 	private static final int ITEM_VIEW_TYPE_URL = 1;
 	private static final int ITEM_VIEW_TYPE_IMAGE = 2;
@@ -59,12 +54,10 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 	
 	private Context mContext;
 	private CirclePresenter mPresenter;
-	private CirclePublicCommentContral mCirclePublicCommentContral;
 	private List<CircleItem> datas = new ArrayList<CircleItem>();
 
-	public void setmCirclePublicCommentContral(
-			CirclePublicCommentContral mCirclePublicCommentContral) {
-		this.mCirclePublicCommentContral = mCirclePublicCommentContral;
+	public void setCirclePresenter(CirclePresenter presenter){
+		mPresenter = presenter;
 	}
 	
 	public List<CircleItem> getDatas() {
@@ -78,7 +71,6 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 	
 	public CircleAdapter(Context context){
 		mContext = context;
-		mPresenter = new CirclePresenter(this);
 	}
 	
 	@Override
@@ -117,6 +109,8 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
+		System.out.println("CircleAdaptr getView----------" + position);
+
 		int itemViewType = getItemViewType(position);
 		ViewHolder holder = null;
 		if(convertView == null){
@@ -158,13 +152,12 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 
 			holder.digCommentBody = (LinearLayout) convertView.findViewById(R.id.digCommentBody);
 
-			holder.commentList = (AppNoScrollerListView) convertView.findViewById(R.id.commentList);
-
-			holder.bbsAdapter = new CommentAdapter(mContext);
+            holder.commentList = (CommentListView)convertView.findViewById(R.id.commentList);
+            holder.commentAdapter = new CommentAdapter(mContext);
 			holder.favortListAdapter = new FavortListAdapter();
 
 			holder.favortListTv.setAdapter(holder.favortListAdapter);
-			holder.commentList.setAdapter(holder.bbsAdapter);
+			holder.commentList.setAdapter(holder.commentAdapter);
 
 			holder.snsPopupWindow = new SnsPopupWindow(mContext);
 
@@ -183,6 +176,7 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 		final List<CommentItem> commentsDatas = circleItem.getComments();
 		boolean hasFavort = circleItem.hasFavort();
 		boolean hasComment = circleItem.hasComment();
+
 		ImageLoader.getInstance().displayImage(headImg, holder.headIv);
 		holder.nameTv.setText(name);
 		holder.timeTv.setText(createTime);
@@ -198,7 +192,9 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 			@Override
 			public void onClick(View v) {
 				//删除
-				mPresenter.deleteCircle(circleId);
+				if(mPresenter!=null){
+					mPresenter.deleteCircle(circleId);
+				}
 			}
 		});
 		if(hasFavort || hasComment){
@@ -217,39 +213,41 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 			}else{
 				holder.favortListTv.setVisibility(View.GONE);
 			}
+
 			if(hasComment){//处理评论列表
-				holder.bbsAdapter.setDatasource(commentsDatas);
-				holder.bbsAdapter.setCommentClickListener(new ICommentItemClickListener() {
-					@Override
-					public void onItemClick(int commentPosition) {
+                holder.commentList.setOnItemClick(new CommentListView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int commentPosition) {
+                        CommentItem commentItem = commentsDatas.get(commentPosition);
+                        if(DatasUtil.curUser.getId().equals(commentItem.getUser().getId())){//复制或者删除自己的评论
 
-						CommentItem commentItem = commentsDatas.get(commentPosition);
-						if(DatasUtil.curUser.getId().equals(commentItem.getUser().getId())){//复制或者删除自己的评论
+                            CommentDialog dialog = new CommentDialog(mContext, mPresenter, commentItem, position);
+                            dialog.show();
+                        }else{//回复别人的评论
+                            if(mPresenter != null){
+                                CommentConfig config = new CommentConfig();
+                                config.circlePosition = position;
+                                config.commentPosition = commentPosition;
+                                config.commentType = CommentConfig.Type.REPLY;
+                                config.replyUser = commentItem.getUser();
+                                mPresenter.showEditTextBody(config);
+                            }
+                        }
+                    }
+                });
+                holder.commentList.setOnItemLongClick(new CommentListView.OnItemLongClickListener() {
+                    @Override
+                    public void onItemLongClick(int commentPosition) {
+                        //长按进行复制或者删除
+                        CommentItem commentItem = commentsDatas.get(commentPosition);
+                        CommentDialog dialog = new CommentDialog(mContext, mPresenter, commentItem, position);
+                        dialog.show();
+                    }
+                });
+                holder.commentAdapter.setDatas(commentsDatas);
+                holder.commentAdapter.notifyDataSetChanged();
+                holder.commentList.setVisibility(View.VISIBLE);
 
-							CommentDialog dialog = new CommentDialog(mContext, mPresenter, commentItem, position);
-							dialog.show();
-						}else{//回复别人的评论
-
-							if(mCirclePublicCommentContral!=null){
-								mCirclePublicCommentContral.editTextBodyVisible(View.VISIBLE, mPresenter, position, TYPE_REPLY_COMMENT, commentItem.getUser(), commentPosition);
-							}
-						}
-					}
-				});
-				holder.bbsAdapter.notifyDataSetChanged();
-				holder.commentList.setVisibility(View.VISIBLE);
-				holder.commentList.setOnItemClickListener(null);
-				holder.commentList.setOnItemLongClickListener(new OnItemLongClickListener() {
-					@Override
-					public boolean onItemLongClick(AdapterView<?> arg0, View view, final int commentPosition, long id) {
-
-						//长按进行复制或者删除
-						CommentItem commentItem = commentsDatas.get(commentPosition);
-						CommentDialog dialog = new CommentDialog(mContext, mPresenter, commentItem, position);
-						dialog.show();
-						return true;
-					}
-				});
 			}else {
 
 				holder.commentList.setVisibility(View.GONE);
@@ -329,7 +327,7 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 		public View digLine;
 
 		/** 评论列表 */
-		public AppNoScrollerListView commentList;
+        public CommentListView commentList;
 		/** 链接的图片 */
 		public ImageView urlImageIv;
 		/** 链接的标题 */
@@ -338,7 +336,8 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 		public MultiImageView multiImageView;
 		// ===========================
 		public FavortListAdapter favortListAdapter;
-		public CommentAdapter bbsAdapter;
+		//public CommentAdapter bbsAdapter;
+        public CommentAdapter commentAdapter;
 		public SnsPopupWindow snsPopupWindow;
 	}
 	
@@ -362,80 +361,24 @@ public class CircleAdapter extends BaseAdapter implements ICircleViewUpdate {
 				if(System.currentTimeMillis()-mLasttime<700)//防止快速点击操作
 					return;
 				mLasttime = System.currentTimeMillis();
-				if ("赞".equals(actionitem.mTitle.toString())) {
-					mPresenter.addFavort(mCirclePosition);
-				} else {//取消点赞
-					mPresenter.deleteFavort(mCirclePosition, mFavorId);
+				if(mPresenter != null){
+					if ("赞".equals(actionitem.mTitle.toString())) {
+						mPresenter.addFavort(mCirclePosition);
+					} else {//取消点赞
+						mPresenter.deleteFavort(mCirclePosition, mFavorId);
+					}
 				}
 				break;
 			case 1://发布评论
-				if(mCirclePublicCommentContral!=null){
-					mCirclePublicCommentContral.editTextBodyVisible(View.VISIBLE, mPresenter, mCirclePosition, TYPE_PUBLIC_COMMENT, null, 0);
+				if(mPresenter != null){
+					CommentConfig config = new CommentConfig();
+					config.circlePosition = mCirclePosition;
+					config.commentType = CommentConfig.Type.PUBLIC;
+					mPresenter.showEditTextBody(config);
 				}
 				break;
 			default:
 				break;
-			}
-		}
-	}
-
-	@Override
-	public void update2DeleteCircle(String circleId) {
-		for(int i=0; i<datas.size(); i++){
-			if(circleId.equals(datas.get(i).getId())){
-				getDatas().remove(i);
-				notifyDataSetChanged();
-				return;
-			}
-		}
-	}
-	
-	@Override
-	public void update2AddFavorite(int circlePosition) {
-		FavortItem item = DatasUtil.createCurUserFavortItem();
-		getDatas().get(circlePosition).getFavorters().add(item);
-		notifyDataSetChanged();
-	}
-	
-	@Override
-	public void update2DeleteFavort(int circlePosition, String favortId) {
-		List<FavortItem> items = getDatas().get(circlePosition).getFavorters();
-		for(int i=0; i<items.size(); i++){
-			if(favortId.equals(items.get(i).getId())){
-				getDatas().get(circlePosition).getFavorters().remove(i);
-				notifyDataSetChanged();
-				return;
-			}
-		}
-	}
-	
-	@Override
-	public void update2AddComment(int circlePosition, int type, User replyUser) {
-		CommentItem newItem = null;
-		String content = "";
-		if(mCirclePublicCommentContral!=null){
-			content = mCirclePublicCommentContral.getEditTextString();
-		}
-		if(type == TYPE_PUBLIC_COMMENT){
-			newItem = DatasUtil.createPublicComment(content);
-		}else if(type == TYPE_REPLY_COMMENT){
-			newItem = DatasUtil.createReplyComment(replyUser, content);
-		}
-		getDatas().get(circlePosition).getComments().add(newItem);
-		notifyDataSetChanged();
-		if(mCirclePublicCommentContral!=null){
-			mCirclePublicCommentContral.clearEditText();
-		}
-	}
-	
-	@Override
-	public void update2DeleteComment(int circlePosition, String commentId) {
-		List<CommentItem> items = getDatas().get(circlePosition).getComments();
-		for(int i=0; i<items.size(); i++){
-			if(commentId.equals(items.get(i).getId())){
-				getDatas().get(circlePosition).getComments().remove(i);
-				notifyDataSetChanged();
-				return;
 			}
 		}
 	}

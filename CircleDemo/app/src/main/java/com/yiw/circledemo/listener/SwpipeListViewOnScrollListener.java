@@ -30,7 +30,7 @@ public class SwpipeListViewOnScrollListener implements AbsListView.OnScrollListe
  
     @Override
     public void onScrollStateChanged(AbsListView absListView, int i) {
-    	System.out.println("onScrollStateChanged: " + i);
+    	//System.out.println("onScrollStateChanged: " + i);
     }
  
     @SuppressLint("NewApi")

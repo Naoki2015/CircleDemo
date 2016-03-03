@@ -1,9 +1,15 @@
 package com.yiw.circledemo.mvp.presenter;
 
-import com.yiw.circledemo.bean.User;
+import android.view.View;
+
+import com.yiw.circledemo.bean.CommentConfig;
+import com.yiw.circledemo.bean.CommentItem;
+import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.mvp.modle.CircleModel;
 import com.yiw.circledemo.mvp.modle.IDataRequestListener;
-import com.yiw.circledemo.mvp.view.ICircleViewUpdate;
+import com.yiw.circledemo.mvp.view.ICircleView;
+import com.yiw.circledemo.utils.DatasUtil;
+
 /**
  * 
 * @ClassName: CirclePresenter 
@@ -14,9 +20,9 @@ import com.yiw.circledemo.mvp.view.ICircleViewUpdate;
  */
 public class CirclePresenter {
 	private CircleModel mCircleModel;
-	private ICircleViewUpdate mCircleView;
+	private ICircleView mCircleView;
 	
-	public CirclePresenter(ICircleViewUpdate view){
+	public CirclePresenter(ICircleView view){
 		this.mCircleView = view;
 		mCircleModel = new CircleModel();
 	}
@@ -30,7 +36,7 @@ public class CirclePresenter {
 	 */
 	public void deleteCircle(final String circleId){
 		mCircleModel.deleteCircle(new IDataRequestListener() {
-			
+
 			@Override
 			public void loadSuccess(Object object) {
 				mCircleView.update2DeleteCircle(circleId);
@@ -47,10 +53,11 @@ public class CirclePresenter {
 	 */
 	public void addFavort(final int circlePosition){
 		mCircleModel.addFavort(new IDataRequestListener() {
-			
+
 			@Override
 			public void loadSuccess(Object object) {
-				mCircleView.update2AddFavorite(circlePosition);
+				FavortItem item = DatasUtil.createCurUserFavortItem();
+				mCircleView.update2AddFavorite(circlePosition, item);
 			}
 		});
 	}
@@ -65,32 +72,41 @@ public class CirclePresenter {
 	 */
 	public void deleteFavort(final int circlePosition, final String favortId){
 		mCircleModel.deleteFavort(new IDataRequestListener() {
-				
-				@Override
-				public void loadSuccess(Object object) {
-					mCircleView.update2DeleteFavort(circlePosition, favortId);
-				}
-			});
+
+			@Override
+			public void loadSuccess(Object object) {
+				mCircleView.update2DeleteFavort(circlePosition, favortId);
+			}
+		});
 	}
 	
 	/**
 	 * 
 	* @Title: addComment 
 	* @Description: 增加评论
-	* @param  circlePosition
-	* @param  type  0：发布评论  1：回复评论
-	* @param  replyUser  回复评论时对谁的回复   
+	* @param  content
+	* @param  config  CommentConfig
 	* @return void    返回类型 
 	* @throws
 	 */
-	public void addComment(final int circlePosition, final int type, final User replyUser){
-		mCircleModel.addComment(new IDataRequestListener(){
+	public void addComment(final String content, final CommentConfig config){
+		if(config == null){
+			return;
+		}
+		mCircleModel.addComment(new IDataRequestListener() {
 
 			@Override
 			public void loadSuccess(Object object) {
-				mCircleView.update2AddComment(circlePosition, type, replyUser);
+				CommentItem newItem = null;
+				if (config.commentType == CommentConfig.Type.PUBLIC) {
+					newItem = DatasUtil.createPublicComment(content);
+				} else if (config.commentType == CommentConfig.Type.REPLY) {
+					newItem = DatasUtil.createReplyComment(config.replyUser, content);
+				}
+
+				mCircleView.update2AddComment(config.circlePosition, newItem);
 			}
-			
+
 		});
 	}
 	
@@ -104,7 +120,7 @@ public class CirclePresenter {
 	* @throws
 	 */
 	public void deleteComment(final int circlePosition, final String commentId){
-		mCircleModel.addComment(new IDataRequestListener(){
+		mCircleModel.deleteComment(new IDataRequestListener(){
 
 			@Override
 			public void loadSuccess(Object object) {
@@ -113,4 +129,13 @@ public class CirclePresenter {
 			
 		});
 	}
+
+	/**
+	 *
+	 * @param commentConfig
+	 */
+	public void showEditTextBody(CommentConfig commentConfig){
+		mCircleView.updateEditTextBodyVisible(View.VISIBLE, commentConfig);
+	}
+
 }

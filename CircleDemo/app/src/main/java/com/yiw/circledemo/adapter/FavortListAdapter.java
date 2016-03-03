@@ -36,6 +36,9 @@ public class FavortListAdapter {
 
     @NonNull
     public void bindListView(FavortListView listview){
+        if(listview == null){
+            throw new IllegalArgumentException("FavortListView is null ....");
+        }
         mListView = listview;
     }
 
@@ -59,6 +62,9 @@ public class FavortListAdapter {
     }
 
     public void notifyDataSetChanged(){
+        if(mListView == null){
+            throw new NullPointerException("listview is null, please bindListView first...");
+        }
         SpannableStringBuilder builder = new SpannableStringBuilder();
         if(datas != null && datas.size() > 0){
             //添加点赞图标
@@ -74,7 +80,6 @@ public class FavortListAdapter {
                     }
                 }
             }
-
         }
         mListView.setText(builder);
         mListView.setMovementMethod(new CircleMovementMethod(R.color.name_selector_color));

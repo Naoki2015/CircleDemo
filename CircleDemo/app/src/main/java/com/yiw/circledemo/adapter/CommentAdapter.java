@@ -1,12 +1,5 @@
 package com.yiw.circledemo.adapter;
 
-/*
- Suneee Android Client, NoticeItemAdapter
- Copyright (c) 2014 Suneee Tech Company Limited
- */
-
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.Spannable;
@@ -14,9 +7,8 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yiw.circledemo.R;
@@ -24,66 +16,75 @@ import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.spannable.CircleMovementMethod;
 import com.yiw.circledemo.spannable.NameClickListener;
 import com.yiw.circledemo.spannable.NameClickable;
+import com.yiw.circledemo.widgets.CommentListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @ClassName: CommentAdapter
- * @Description: 评论的adapter
- * @author yiw
- * @date 2015-12-28 下午3:40:29
+ * Created by yiwei on 16/3/2.
  */
-public class CommentAdapter extends BaseAdapter {
+public class CommentAdapter {
 
-    private List<CommentItem> datasource = new ArrayList<CommentItem>();
     private Context mContext;
-    private ICommentItemClickListener commentItemClickListener;// 评论点击事件
+    private CommentListView mListview;
+    private List<CommentItem> mDatas;
 
-    public void setCommentClickListener(
-            ICommentItemClickListener commentItemClickListener) {
-        this.commentItemClickListener = commentItemClickListener;
-    }
-
-    public CommentAdapter(Context context) {
+    public CommentAdapter(Context context){
         mContext = context;
+        mDatas = new ArrayList<CommentItem>();
     }
 
-    /**
-     * @param context
-     */
-    public CommentAdapter(Activity context, List<CommentItem> datasource) {
-        this.datasource = datasource;
+    public CommentAdapter(Context context, List<CommentItem> datas){
+        mContext = context;
+        setDatas(datas);
     }
 
-    public void setDatasource(List<CommentItem> datasource) {
-        if (datasource != null) {
-            this.datasource = datasource;
+    public void bindListView(CommentListView listView){
+        if(listView == null){
+            throw new IllegalArgumentException("CommentListView is null....");
+        }
+        mListview = listView;
+    }
+
+    public void setDatas(List<CommentItem> datas){
+        if(datas == null ){
+            datas = new ArrayList<CommentItem>();
+        }
+        mDatas = datas;
+    }
+
+    public List<CommentItem> getDatas(){
+        return mDatas;
+    }
+
+    public int getCount(){
+        if(mDatas == null){
+            return 0;
+        }
+        return mDatas.size();
+    }
+
+    public CommentItem getItem(int position){
+        if(mDatas == null){
+            return null;
+        }
+        if(position < mDatas.size()){
+            return mDatas.get(position);
+        }else{
+            throw new ArrayIndexOutOfBoundsException();
         }
     }
 
-    class ViewHolder {
-        TextView commentTv;
-        CircleMovementMethod circleMovementMethod;
-    }
+    private View getView(final int position){
+        System.out.println("CommentAdapter getView-----------------------" + position);
+        View convertView = View.inflate(mContext,
+                R.layout.im_social_item_comment, null);
+        TextView commentTv = (TextView) convertView.findViewById(R.id.commentTv);
+        final CircleMovementMethod circleMovementMethod = new CircleMovementMethod(R.color.name_selector_color,
+                R.color.name_selector_color);
 
-    @SuppressLint("InflateParams")
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            holder = new ViewHolder();
-            convertView = View.inflate(mContext,
-                    R.layout.im_social_item_comment, null);
-            holder.commentTv = (TextView) convertView.findViewById(R.id.commentTv);
-            holder.circleMovementMethod = new CircleMovementMethod(R.color.name_selector_color,
-                    R.color.name_selector_color);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
-
-        final CommentItem bean = datasource.get(position);
+        final CommentItem bean = mDatas.get(position);
         String name = bean.getUser().getName();
         String id = bean.getId();
         String toReplyName = "";
@@ -105,18 +106,29 @@ public class CommentAdapter extends BaseAdapter {
         //SpannableString contentSpanText = new SpannableString(contentBodyStr);
         //contentSpanText.setSpan(new UnderlineSpan(), 0, contentSpanText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         builder.append(contentBodyStr);
-        holder.commentTv.setText(builder);
+        commentTv.setText(builder);
 
-        final CircleMovementMethod circleMovementMethod = holder.circleMovementMethod;
-        holder.commentTv.setMovementMethod(circleMovementMethod);
-        holder.commentTv.setOnClickListener(new OnClickListener() {
+        commentTv.setMovementMethod(circleMovementMethod);
+        commentTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (circleMovementMethod.isPassToTv()) {
-                    commentItemClickListener.onItemClick(position);
+                    mListview.getOnItemClickListener().onItemClick(position);
                 }
             }
         });
+        commentTv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (circleMovementMethod.isPassToTv()) {
+                    mListview.getOnItemLongClickListener().onItemLongClick(position);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
         return convertView;
     }
 
@@ -129,28 +141,25 @@ public class CommentAdapter extends BaseAdapter {
         return subjectSpanText;
     }
 
-    @Override
-    public int getCount() {
-        return datasource.size();
-    }
+    public void notifyDataSetChanged(){
+        if(mListview == null){
+            throw new NullPointerException("listview is null, please bindListView first...");
+        }
+        mListview.removeAllViews();
+        if(mDatas == null || mDatas.size() == 0){
+            return;
+        }
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        for(int i=0; i<mDatas.size(); i++){
+            final int index = i;
+            View view = getView(index);
+            if(view == null){
+                throw new NullPointerException("listview item layout is null, please check getView()...");
+            }
 
-    @Override
-    public Object getItem(int arg0) {
-        return datasource.get(arg0);
-    }
+            mListview.addView(view, index, layoutParams);
+        }
 
-    @Override
-    public long getItemId(int arg0) {
-        return arg0;
-    }
-
-    public List<CommentItem> getDatasource() {
-        return datasource;
-    }
-
-    public interface ICommentItemClickListener {
-
-        public void onItemClick(int position);
     }
 
 }

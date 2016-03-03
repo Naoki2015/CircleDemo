@@ -24,7 +24,6 @@ public class MyApplication extends Application {
 	public final static String DEFAULT_SAVE_IMAGE_PATH = Environment.getExternalStorageDirectory() + File.separator + "CircleDemo" + File.separator + "Images"
 				+ File.separator;
 
-	public static int mKeyBoardH = 0;
 	private static Context mContext;
 	@Override
 	public void onCreate() {
