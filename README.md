@@ -10,7 +10,7 @@
 
 ## 贡献者
 16/02/26<br>
-非常感谢[hnclca](https://github.com/hnclca)增加图片点击效果
+非常感谢[hnclca](https://github.com/hnclca)增加图片点击效果，修改单张图片样式
 
 
 
