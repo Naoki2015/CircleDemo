@@ -174,7 +174,7 @@ public class DatasUtil {
 
 	public static List<CommentItem> createCommentItemList() {
 		List<CommentItem> items = new ArrayList<CommentItem>();
-		int size = getRandomNum(5);
+		int size = getRandomNum(10);
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
 				items.add(createComment());

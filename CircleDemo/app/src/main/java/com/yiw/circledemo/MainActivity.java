@@ -20,10 +20,15 @@ import android.widget.TextView;
 
 import com.yiw.circledemo.adapter.CircleAdapter;
 import com.yiw.circledemo.bean.CircleItem;
-import com.yiw.circledemo.contral.CirclePublicCommentContral;
+import com.yiw.circledemo.bean.CommentConfig;
+import com.yiw.circledemo.bean.CommentItem;
+import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.listener.SwpipeListViewOnScrollListener;
+import com.yiw.circledemo.mvp.presenter.CirclePresenter;
+import com.yiw.circledemo.mvp.view.ICircleView;
 import com.yiw.circledemo.utils.CommonUtils;
 import com.yiw.circledemo.utils.DatasUtil;
+import com.yiw.circledemo.widgets.CommentListView;
 
 import java.util.List;
 /**
@@ -34,7 +39,7 @@ import java.util.List;
 * @date 2015-12-28 下午4:21:18 
 *
  */
-public class MainActivity extends Activity implements OnRefreshListener{
+public class MainActivity extends Activity implements OnRefreshListener, ICircleView{
 
 	protected static final String TAG = MainActivity.class.getSimpleName();
 	private ListView mCircleLv;
@@ -46,12 +51,18 @@ public class MainActivity extends Activity implements OnRefreshListener{
 	
 	private int mScreenHeight;
 	private int mEditTextBodyHeight;
-	private CirclePublicCommentContral mCirclePublicCommentContral;
+	private int mCurrentKeyboardH;
+	private int mSelectCircleItemH;
+	private int mSelectCommentItemOffset;
+
+	private CirclePresenter mPresenter;
+	private CommentConfig mCommentConfig;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mPresenter = new CirclePresenter(this);
 		initView();
 		loadData();
 	}
@@ -64,28 +75,37 @@ public class MainActivity extends Activity implements OnRefreshListener{
 		mCircleLv.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if(mEditTextBody.getVisibility()==View.VISIBLE){
-					mEditTextBody.setVisibility(View.GONE);
-					CommonUtils.hideSoftInput(MainActivity.this, mEditText);
+				if (mEditTextBody.getVisibility() == View.VISIBLE) {
+					//mEditTextBody.setVisibility(View.GONE);
+					//CommonUtils.hideSoftInput(MainActivity.this, mEditText);
+					updateEditTextBodyVisible(View.GONE, null);
 					return true;
 				}
 				return false;
 			}
 		});
 		mSwipeRefreshLayout.setOnRefreshListener(this);  
-		mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,  
-                android.R.color.holo_orange_light, android.R.color.holo_red_light);  
+		mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
+				android.R.color.holo_orange_light, android.R.color.holo_red_light);
 		mAdapter = new CircleAdapter(this);
+		mAdapter.setCirclePresenter(mPresenter);
 		mCircleLv.setAdapter(mAdapter);
 		
 		mEditTextBody = (LinearLayout) findViewById(R.id.editTextBodyLl);
 		mEditText = (EditText) findViewById(R.id.circleEt);
 		sendTv = (TextView) findViewById(R.id.sendTv);
-		
-		mCirclePublicCommentContral = new CirclePublicCommentContral(this, mEditTextBody, mEditText, sendTv);
-		mCirclePublicCommentContral.setmListView(mCircleLv);
-		mAdapter.setmCirclePublicCommentContral(mCirclePublicCommentContral); 
-		
+		sendTv.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mPresenter != null) {
+					//发布评论
+					String content = mEditText.getText().toString().trim();
+					mPresenter.addComment(content, mCommentConfig);
+				}
+				updateEditTextBodyVisible(View.GONE, null);
+			}
+		});
+
 		setViewTreeObserver();
 	}
 	
@@ -107,16 +127,18 @@ public class MainActivity extends Activity implements OnRefreshListener{
 				}
                 int keyboardH = screenH - (r.bottom - r.top);
 				Log.d(TAG, "keyboardH = " + keyboardH + " &r.bottom=" + r.bottom + " &top=" + r.top + " &statusBarH=" + statusBarH);
-                if(keyboardH == MyApplication.mKeyBoardH){//有变化时才处理，否则会陷入死循环
+                if(keyboardH == mCurrentKeyboardH){//有变化时才处理，否则会陷入死循环
                 	return;
                 }
 
-                MyApplication.mKeyBoardH = keyboardH;
+				mCurrentKeyboardH = keyboardH;
             	mScreenHeight = screenH;//应用屏幕的高度
             	mEditTextBodyHeight = mEditTextBody.getHeight();
-            	if(mCirclePublicCommentContral != null){
-            		mCirclePublicCommentContral.handleListViewScroll();
-            	}
+
+				//偏移listview
+				if(mCircleLv!=null && mCommentConfig != null){
+					mCircleLv.setSelectionFromTop(mCommentConfig.circlePosition, getListviewOffset(mCommentConfig));
+				}
             }
         });
 	}
@@ -137,7 +159,7 @@ public class MainActivity extends Activity implements OnRefreshListener{
 	@Override
 	public void onRefresh() {
 		
-		new Handler().postDelayed(new Runnable(){
+		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
 				loadData();
@@ -153,14 +175,7 @@ public class MainActivity extends Activity implements OnRefreshListener{
 		mAdapter.notifyDataSetChanged();
 	}
 
-	public int getScreenHeight(){
-		return mScreenHeight;
-	}
-	
-	public int getEditTextBodyHeight(){
-		return mEditTextBodyHeight;
-	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -171,4 +186,129 @@ public class MainActivity extends Activity implements OnRefreshListener{
         }
 		return super.onKeyDown(keyCode, event);
 	}
+
+	@Override
+	public void update2DeleteCircle(String circleId) {
+		List<CircleItem> circleItems = mAdapter.getDatas();
+		for(int i=0; i<circleItems.size(); i++){
+			if(circleId.equals(circleItems.get(i).getId())){
+				circleItems.remove(i);
+				mAdapter.notifyDataSetChanged();
+				return;
+			}
+		}
+	}
+
+	@Override
+	public void update2AddFavorite(int circlePosition, FavortItem addItem) {
+		if(addItem != null){
+			mAdapter.getDatas().get(circlePosition).getFavorters().add(addItem);
+			mAdapter.notifyDataSetChanged();
+		}
+	}
+
+	@Override
+	public void update2DeleteFavort(int circlePosition, String favortId) {
+		List<FavortItem> items = mAdapter.getDatas().get(circlePosition).getFavorters();
+		for(int i=0; i<items.size(); i++){
+			if(favortId.equals(items.get(i).getId())){
+				items.remove(i);
+				mAdapter.notifyDataSetChanged();
+				return;
+			}
+		}
+	}
+
+	@Override
+	public void update2AddComment(int circlePosition, CommentItem addItem) {
+		if(addItem != null){
+			mAdapter.getDatas().get(circlePosition).getComments().add(addItem);
+			mAdapter.notifyDataSetChanged();
+		}
+		//清空评论文本
+		mEditText.setText("");
+	}
+
+	@Override
+	public void update2DeleteComment(int circlePosition, String commentId) {
+		List<CommentItem> items = mAdapter.getDatas().get(circlePosition).getComments();
+		for(int i=0; i<items.size(); i++){
+			if(commentId.equals(items.get(i).getId())){
+				items.remove(i);
+				mAdapter.notifyDataSetChanged();
+				return;
+			}
+		}
+	}
+
+	@Override
+	public void updateEditTextBodyVisible(int visibility, CommentConfig commentConfig) {
+		mCommentConfig = commentConfig;
+		mEditTextBody.setVisibility(visibility);
+
+		measureCircleItemHighAndCommentItemOffset(commentConfig);
+
+		if(View.VISIBLE==visibility){
+			mEditText.requestFocus();
+			//弹出键盘
+			CommonUtils.showSoftInput(mEditText.getContext(), mEditText);
+
+		}else if(View.GONE==visibility){
+			//隐藏键盘
+			CommonUtils.hideSoftInput(mEditText.getContext(), mEditText);
+		}
+	}
+
+
+	/**
+	 * 测量偏移量
+	 * @param commentConfig
+	 * @return
+	 */
+	private int getListviewOffset(CommentConfig commentConfig) {
+		if(commentConfig == null)
+			return 0;
+		
+		int listviewOffset = mScreenHeight - mSelectCircleItemH - mCurrentKeyboardH - mEditTextBodyHeight;
+
+		if(commentConfig.commentType == CommentConfig.Type.REPLY){
+			//回复评论的情况
+			listviewOffset = listviewOffset + mSelectCommentItemOffset;
+		}
+		return listviewOffset;
+	}
+
+	private void measureCircleItemHighAndCommentItemOffset(CommentConfig commentConfig){
+		if(commentConfig == null)
+			return;
+
+		int firstPosition = mCircleLv.getFirstVisiblePosition();
+		//只能返回当前可见区域（列表可滚动）的子项
+		View selectCircleItem = mCircleLv.getChildAt(commentConfig.circlePosition - firstPosition);
+		if(selectCircleItem != null){
+			mSelectCircleItemH = selectCircleItem.getHeight();
+		}
+
+		if(commentConfig.commentType == CommentConfig.Type.REPLY){
+			//回复评论的情况
+			CommentListView commentLv = (CommentListView) selectCircleItem.findViewById(R.id.commentList);
+			if(commentLv!=null){
+				//找到要回复的评论view,计算出该view距离所属动态底部的距离
+				View selectCommentItem = commentLv.getChildAt(commentConfig.commentPosition);
+				if(selectCommentItem != null){
+					//选择的commentItem距选择的CircleItem底部的距离
+					mSelectCommentItemOffset = 0;
+					View parentView = selectCommentItem;
+					do {
+						int subItemBottom = parentView.getBottom();
+						parentView = (View) parentView.getParent();
+						if(parentView != null){
+							mSelectCommentItemOffset += (parentView.getHeight() - subItemBottom);
+						}
+					} while (parentView != null && parentView != selectCircleItem);
+				}
+			}
+		}
+	}
+
 }

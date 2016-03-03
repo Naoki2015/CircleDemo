@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:orientation="horizontal" >
 
@@ -106,7 +106,7 @@
             <LinearLayout
                 android:id="@+id/digCommentBody"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:minHeight="10dip"
                 android:paddingLeft="12dip"
                 android:paddingTop="12dip"
@@ -133,20 +133,13 @@
                     android:layout_marginTop="5dip"
                     android:layout_marginBottom="5dip"
                     />
-                
-                <com.yiw.circledemo.widgets.AppNoScrollerListView
+                <com.yiw.circledemo.widgets.CommentListView
                     android:id="@+id/commentList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:cacheColorHint="#00000000"
-                    android:divider="@android:color/transparent"
-                    android:dividerHeight="0dip"
-                    android:fadingEdge="none"
-                    android:fastScrollEnabled="false"
-                    android:footerDividersEnabled="false"
-                    android:headerDividersEnabled="false"
-                    android:listSelector="@drawable/selector_adapter_item_bg"
-                     />
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical"
+                    />
+
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
