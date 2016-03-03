@@ -43,20 +43,17 @@
                     android:id="@+id/circleEt"
                     android:layout_width="wrap_content"
                 	android:layout_height="wrap_content"
+                    android:background="@null"
                 	android:layout_weight="1"
                 	android:hint="说点什么..."
                     />
-                <TextView 
-                    android:id="@+id/sendTv"
+                <ImageView
+                    android:id="@+id/sendIv"
                     android:layout_width="wrap_content"
-                	android:layout_height="wrap_content"
-                	android:padding="8dp"
-                	android:layout_marginLeft="6dp"
-                	android:layout_marginRight="6dp"
-                	android:text="发送"
-                	android:background="@android:color/white"
-                	android:textSize="16sp"
-                    />
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/selector_send" />
             </LinearLayout>
         </RelativeLayout>
     </android.support.v4.widget.SwipeRefreshLayout>

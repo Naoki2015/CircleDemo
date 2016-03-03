@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -14,9 +15,10 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yiw.circledemo.adapter.CircleAdapter;
 import com.yiw.circledemo.bean.CircleItem;
@@ -47,7 +49,7 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 	private CircleAdapter mAdapter;
 	private LinearLayout mEditTextBody;
 	private EditText mEditText;
-	private TextView sendTv;
+	private ImageView sendIv;
 	
 	private int mScreenHeight;
 	private int mEditTextBodyHeight;
@@ -93,13 +95,17 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 		
 		mEditTextBody = (LinearLayout) findViewById(R.id.editTextBodyLl);
 		mEditText = (EditText) findViewById(R.id.circleEt);
-		sendTv = (TextView) findViewById(R.id.sendTv);
-		sendTv.setOnClickListener(new View.OnClickListener() {
+		sendIv = (ImageView) findViewById(R.id.sendIv);
+		sendIv.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (mPresenter != null) {
 					//发布评论
 					String content = mEditText.getText().toString().trim();
+					if(TextUtils.isEmpty(content)){
+						Toast.makeText(MainActivity.this, "评论内容不能为空...", Toast.LENGTH_SHORT).show();
+						return;
+					}
 					mPresenter.addComment(content, mCommentConfig);
 				}
 				updateEditTextBodyVisible(View.GONE, null);
