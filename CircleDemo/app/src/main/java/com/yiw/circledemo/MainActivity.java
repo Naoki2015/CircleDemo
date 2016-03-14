@@ -50,7 +50,7 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 	private LinearLayout mEditTextBody;
 	private EditText mEditText;
 	private ImageView sendIv;
-	
+
 	private int mScreenHeight;
 	private int mEditTextBodyHeight;
 	private int mCurrentKeyboardH;
@@ -89,6 +89,7 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 		mSwipeRefreshLayout.setOnRefreshListener(this);  
 		mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
 				android.R.color.holo_orange_light, android.R.color.holo_red_light);
+
 		mAdapter = new CircleAdapter(this);
 		mAdapter.setCirclePresenter(mPresenter);
 		mCircleLv.setAdapter(mAdapter);
@@ -132,7 +133,8 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 					r.top = statusBarH;
 				}
                 int keyboardH = screenH - (r.bottom - r.top);
-				Log.d(TAG, "keyboardH = " + keyboardH + " &r.bottom=" + r.bottom + " &top=" + r.top + " &statusBarH=" + statusBarH);
+				Log.d(TAG, "screenH＝ "+ screenH +" &keyboardH = " + keyboardH + " &r.bottom=" + r.bottom + " &top=" + r.top + " &statusBarH=" + statusBarH);
+
                 if(keyboardH == mCurrentKeyboardH){//有变化时才处理，否则会陷入死循环
                 	return;
                 }
@@ -143,7 +145,8 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 
 				//偏移listview
 				if(mCircleLv!=null && mCommentConfig != null){
-					mCircleLv.setSelectionFromTop(mCommentConfig.circlePosition, getListviewOffset(mCommentConfig));
+					int index = mCommentConfig.circlePosition==0?mCommentConfig.circlePosition:(mCommentConfig.circlePosition+mCircleLv.getHeaderViewsCount());
+					mCircleLv.setSelectionFromTop(index, getListviewOffset(mCommentConfig));
 				}
             }
         });
@@ -274,9 +277,8 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 	private int getListviewOffset(CommentConfig commentConfig) {
 		if(commentConfig == null)
 			return 0;
-		
+		//这里如果你的listview上面还有其它占高度的控件，则需要减去该控件高度，listview的headview除外。
 		int listviewOffset = mScreenHeight - mSelectCircleItemH - mCurrentKeyboardH - mEditTextBodyHeight;
-
 		if(commentConfig.commentType == CommentConfig.Type.REPLY){
 			//回复评论的情况
 			listviewOffset = listviewOffset + mSelectCommentItemOffset;
@@ -288,11 +290,18 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 		if(commentConfig == null)
 			return;
 
+		int headViewCount = mCircleLv.getHeaderViewsCount();
 		int firstPosition = mCircleLv.getFirstVisiblePosition();
 		//只能返回当前可见区域（列表可滚动）的子项
-		View selectCircleItem = mCircleLv.getChildAt(commentConfig.circlePosition - firstPosition);
+		View selectCircleItem = mCircleLv.getChildAt(headViewCount + commentConfig.circlePosition - firstPosition);
 		if(selectCircleItem != null){
 			mSelectCircleItemH = selectCircleItem.getHeight();
+			if(headViewCount >0 && firstPosition <headViewCount && commentConfig.circlePosition == 0){
+				//如果有headView，而且head是可见的，并且处理偏移的位置是第一条动态，则将显示的headView的高度合并到第一条动态上
+				for(int i=firstPosition; i<headViewCount; i++){
+					mSelectCircleItemH += mCircleLv.getChildAt(i).getHeight();
+				}
+			}
 		}
 
 		if(commentConfig.commentType == CommentConfig.Type.REPLY){
