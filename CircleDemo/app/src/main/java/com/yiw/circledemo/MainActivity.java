@@ -6,7 +6,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -17,20 +17,23 @@ import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.yiw.circledemo.adapter.CircleAdapter;
 import com.yiw.circledemo.bean.CircleItem;
 import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
-import com.yiw.circledemo.listener.SwpipeListViewOnScrollListener;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
 import com.yiw.circledemo.mvp.view.ICircleView;
 import com.yiw.circledemo.utils.CommonUtils;
 import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.widgets.CommentListView;
+import com.yiw.circledemo.widgets.DivItemDecoration;
+import com.yiw.circledemo.widgets.TitleBar;
 
 import java.util.List;
 /**
@@ -41,11 +44,9 @@ import java.util.List;
 * @date 2015-12-28 下午4:21:18 
 *
  */
-public class MainActivity extends Activity implements OnRefreshListener, ICircleView{
+public class MainActivity extends Activity implements ICircleView{
 
 	protected static final String TAG = MainActivity.class.getSimpleName();
-	private ListView mCircleLv;
-	private SwipeRefreshLayout mSwipeRefreshLayout;
 	private CircleAdapter mAdapter;
 	private LinearLayout mEditTextBody;
 	private EditText mEditText;
@@ -59,40 +60,59 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 
 	private CirclePresenter mPresenter;
 	private CommentConfig mCommentConfig;
+	private SuperRecyclerView recyclerView;
+	private RelativeLayout bodyLayout;
+	private LinearLayoutManager layoutManager;
+    private TitleBar titleBar;
 
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mPresenter = new CirclePresenter(this);
+		mPresenter = new CirclePresenter();
+        mPresenter.attachView(this);
 		initView();
 		loadData();
 	}
 
 	@SuppressLint({ "ClickableViewAccessibility", "InlinedApi" })
 	private void initView() {
-		mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.mRefreshLayout);
-		mCircleLv = (ListView) findViewById(R.id.circleLv);
-		mCircleLv.setOnScrollListener(new SwpipeListViewOnScrollListener(mSwipeRefreshLayout));
-		mCircleLv.setOnTouchListener(new OnTouchListener() {
+
+        initTitle();
+
+		recyclerView = (SuperRecyclerView) findViewById(R.id.recyclerView);
+		layoutManager = new LinearLayoutManager(this);
+		recyclerView.setLayoutManager(layoutManager);
+		recyclerView.addItemDecoration(new DivItemDecoration(2, true));
+
+		recyclerView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (mEditTextBody.getVisibility() == View.VISIBLE) {
-					//mEditTextBody.setVisibility(View.GONE);
-					//CommonUtils.hideSoftInput(MainActivity.this, mEditText);
 					updateEditTextBodyVisible(View.GONE, null);
 					return true;
 				}
 				return false;
 			}
 		});
-		mSwipeRefreshLayout.setOnRefreshListener(this);  
-		mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
-				android.R.color.holo_orange_light, android.R.color.holo_red_light);
+
+        recyclerView.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadData();
+                        recyclerView.setRefreshing(false);
+                    }
+                }, 2000);
+            }
+        });
+
 
 		mAdapter = new CircleAdapter(this);
 		mAdapter.setCirclePresenter(mPresenter);
-		mCircleLv.setAdapter(mAdapter);
+        recyclerView.setAdapter(mAdapter);
 		
 		mEditTextBody = (LinearLayout) findViewById(R.id.editTextBodyLl);
 		mEditText = (EditText) findViewById(R.id.circleEt);
@@ -115,19 +135,35 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 
 		setViewTreeObserver();
 	}
-	
 
-	private void setViewTreeObserver() {
-		
-		final ViewTreeObserver swipeRefreshLayoutVTO = mSwipeRefreshLayout.getViewTreeObserver();
+    private void initTitle() {
+
+        titleBar = (TitleBar) findViewById(R.id.main_title_bar);
+        titleBar.setTitle("朋友圈");
+        titleBar.setTitleColor(getResources().getColor(R.color.white));
+        titleBar.setBackgroundColor(getResources().getColor(R.color.title_bg));
+
+        TextView textView = (TextView) titleBar.addAction(new TitleBar.TextAction("发布视频") {
+            @Override
+            public void performAction(View view) {
+                Toast.makeText(MainActivity.this, "敬请期待...", Toast.LENGTH_SHORT).show();
+            }
+        });
+        textView.setTextColor(getResources().getColor(R.color.white));
+    }
+
+
+    private void setViewTreeObserver() {
+		bodyLayout = (RelativeLayout) findViewById(R.id.bodyLayout);
+		final ViewTreeObserver swipeRefreshLayoutVTO = bodyLayout.getViewTreeObserver();
 		swipeRefreshLayoutVTO.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
             public void onGlobalLayout() {
             	
                 Rect r = new Rect();
-                mSwipeRefreshLayout.getWindowVisibleDisplayFrame(r);
+				bodyLayout.getWindowVisibleDisplayFrame(r);
 				int statusBarH =  getStatusBarHeight();//状态栏高度
-                int screenH = mSwipeRefreshLayout.getRootView().getHeight();
+                int screenH = bodyLayout.getRootView().getHeight();
 				if(r.top != statusBarH ){
 					//在这个demo中r.top代表的是状态栏高度，在沉浸式状态栏时r.top＝0，通过getStatusBarHeight获取状态栏高度
 					r.top = statusBarH;
@@ -144,9 +180,8 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
             	mEditTextBodyHeight = mEditTextBody.getHeight();
 
 				//偏移listview
-				if(mCircleLv!=null && mCommentConfig != null){
-					int index = mCommentConfig.circlePosition==0?mCommentConfig.circlePosition:(mCommentConfig.circlePosition+mCircleLv.getHeaderViewsCount());
-					mCircleLv.setSelectionFromTop(index, getListviewOffset(mCommentConfig));
+				if(recyclerView!=null && mCommentConfig != null){
+					layoutManager.scrollToPositionWithOffset(mCommentConfig.circlePosition, getListviewOffset(mCommentConfig));
 				}
             }
         });
@@ -165,18 +200,6 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 		return result;
 	}
 
-	@Override
-	public void onRefresh() {
-		
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				loadData();
-				mSwipeRefreshLayout.setRefreshing(false);
-			}
-		}, 2000);
-		
-	}
 
 	private void loadData() {
 		List<CircleItem> datas = DatasUtil.createCircleDatas();
@@ -211,14 +234,16 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 	@Override
 	public void update2AddFavorite(int circlePosition, FavortItem addItem) {
 		if(addItem != null){
-			mAdapter.getDatas().get(circlePosition).getFavorters().add(addItem);
+            CircleItem item = (CircleItem) mAdapter.getDatas().get(circlePosition);
+            item.getFavorters().add(addItem);
 			mAdapter.notifyDataSetChanged();
 		}
 	}
 
 	@Override
 	public void update2DeleteFavort(int circlePosition, String favortId) {
-		List<FavortItem> items = mAdapter.getDatas().get(circlePosition).getFavorters();
+        CircleItem item = (CircleItem) mAdapter.getDatas().get(circlePosition);
+		List<FavortItem> items = item.getFavorters();
 		for(int i=0; i<items.size(); i++){
 			if(favortId.equals(items.get(i).getId())){
 				items.remove(i);
@@ -231,7 +256,8 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 	@Override
 	public void update2AddComment(int circlePosition, CommentItem addItem) {
 		if(addItem != null){
-			mAdapter.getDatas().get(circlePosition).getComments().add(addItem);
+            CircleItem item = (CircleItem) mAdapter.getDatas().get(circlePosition);
+            item.getComments().add(addItem);
 			mAdapter.notifyDataSetChanged();
 		}
 		//清空评论文本
@@ -240,7 +266,8 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 
 	@Override
 	public void update2DeleteComment(int circlePosition, String commentId) {
-		List<CommentItem> items = mAdapter.getDatas().get(circlePosition).getComments();
+        CircleItem item = (CircleItem) mAdapter.getDatas().get(circlePosition);
+		List<CommentItem> items = item.getComments();
 		for(int i=0; i<items.size(); i++){
 			if(commentId.equals(items.get(i).getId())){
 				items.remove(i);
@@ -278,11 +305,13 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 		if(commentConfig == null)
 			return 0;
 		//这里如果你的listview上面还有其它占高度的控件，则需要减去该控件高度，listview的headview除外。
-		int listviewOffset = mScreenHeight - mSelectCircleItemH - mCurrentKeyboardH - mEditTextBodyHeight;
+		//int listviewOffset = mScreenHeight - mSelectCircleItemH - mCurrentKeyboardH - mEditTextBodyHeight;
+        int listviewOffset = mScreenHeight - mSelectCircleItemH - mCurrentKeyboardH - mEditTextBodyHeight - titleBar.getHeight();
 		if(commentConfig.commentType == CommentConfig.Type.REPLY){
 			//回复评论的情况
 			listviewOffset = listviewOffset + mSelectCommentItemOffset;
 		}
+        Log.i(TAG, "listviewOffset : " + listviewOffset);
 		return listviewOffset;
 	}
 
@@ -290,18 +319,12 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 		if(commentConfig == null)
 			return;
 
-		int headViewCount = mCircleLv.getHeaderViewsCount();
-		int firstPosition = mCircleLv.getFirstVisiblePosition();
+		int firstPosition = layoutManager.findFirstVisibleItemPosition();
 		//只能返回当前可见区域（列表可滚动）的子项
-		View selectCircleItem = mCircleLv.getChildAt(headViewCount + commentConfig.circlePosition - firstPosition);
+        View selectCircleItem = layoutManager.getChildAt(commentConfig.circlePosition - firstPosition);
+
 		if(selectCircleItem != null){
 			mSelectCircleItemH = selectCircleItem.getHeight();
-			if(headViewCount >0 && firstPosition <headViewCount && commentConfig.circlePosition == 0){
-				//如果有headView，而且head是可见的，并且处理偏移的位置是第一条动态，则将显示的headView的高度合并到第一条动态上
-				for(int i=firstPosition; i<headViewCount; i++){
-					mSelectCircleItemH += mCircleLv.getChildAt(i).getHeight();
-				}
-			}
 		}
 
 		if(commentConfig.commentType == CommentConfig.Type.REPLY){
@@ -326,4 +349,18 @@ public class MainActivity extends Activity implements OnRefreshListener, ICircle
 		}
 	}
 
+	@Override
+	public void showLoading(String msg) {
+
+	}
+
+	@Override
+	public void hideLoading() {
+
+	}
+
+	@Override
+	public void showError(String errorMsg) {
+
+	}
 }

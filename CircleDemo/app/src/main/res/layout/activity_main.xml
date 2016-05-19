@@ -1,61 +1,34 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/color_aeaeae"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context="com.yiw.circledemo.MainActivity" >
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/mRefreshLayout"
+    <include layout="@layout/layout_main_titlebar"/>
+
+    <RelativeLayout
+        android:id="@+id/bodyLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" >
 
-        <RelativeLayout
+        <com.malinskiy.superrecyclerview.SuperRecyclerView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            app:mainLayoutId="@layout/layout_recyclerview_verticalscroll"
+            app:recyclerClipToPadding="true"
+            app:scrollbarStyle="outsideOverlay" />
 
-            <ListView
-                android:id="@+id/circleLv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:cacheColorHint="@android:color/transparent"
-                android:divider="@color/im_line_color"
-                android:dividerHeight="1px"
-                android:fadingEdge="none"
-                android:fadingEdgeLength="0dp"
-                android:focusable="true"
-                android:transcriptMode="normal"
-                android:listSelector="@android:color/transparent" >
-            </ListView>
-            
-            <LinearLayout 
-                android:id="@+id/editTextBodyLl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:gravity="center_vertical"
-                android:layout_alignParentBottom="true"
-                android:background="#f6f6f6"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                >
-                <EditText 
-                    android:id="@+id/circleEt"
-                    android:layout_width="wrap_content"
-                	android:layout_height="wrap_content"
-                    android:background="@null"
-                	android:layout_weight="1"
-                	android:hint="说点什么..."
-                    />
-                <ImageView
-                    android:id="@+id/sendIv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/selector_send" />
-            </LinearLayout>
-        </RelativeLayout>
-    </android.support.v4.widget.SwipeRefreshLayout>
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            layout="@layout/layout_editview"/>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

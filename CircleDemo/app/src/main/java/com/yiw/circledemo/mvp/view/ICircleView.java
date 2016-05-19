@@ -11,7 +11,7 @@ import com.yiw.circledemo.bean.FavortItem;
 * @date 2015-12-28 下午4:13:04 
 *
  */
-public interface ICircleView {
+public interface ICircleView extends BaseView{
 
 	public void update2DeleteCircle(String circleId);
 	public void update2AddFavorite(int circlePosition, FavortItem addItem);

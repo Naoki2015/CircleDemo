@@ -18,12 +18,10 @@ import com.yiw.circledemo.utils.DatasUtil;
 * @date 2015-12-28 下午4:06:03 
 *
  */
-public class CirclePresenter {
+public class CirclePresenter extends BasePresenter<ICircleView>{
 	private CircleModel mCircleModel;
-	private ICircleView mCircleView;
-	
-	public CirclePresenter(ICircleView view){
-		this.mCircleView = view;
+
+	public CirclePresenter(){
 		mCircleModel = new CircleModel();
 	}
 	/**
@@ -39,7 +37,7 @@ public class CirclePresenter {
 
 			@Override
 			public void loadSuccess(Object object) {
-				mCircleView.update2DeleteCircle(circleId);
+				getView().update2DeleteCircle(circleId);
 			}
 		});
 	}
@@ -57,7 +55,7 @@ public class CirclePresenter {
 			@Override
 			public void loadSuccess(Object object) {
 				FavortItem item = DatasUtil.createCurUserFavortItem();
-				mCircleView.update2AddFavorite(circlePosition, item);
+				getView().update2AddFavorite(circlePosition, item);
 			}
 		});
 	}
@@ -75,7 +73,7 @@ public class CirclePresenter {
 
 			@Override
 			public void loadSuccess(Object object) {
-				mCircleView.update2DeleteFavort(circlePosition, favortId);
+				getView().update2DeleteFavort(circlePosition, favortId);
 			}
 		});
 	}
@@ -104,7 +102,7 @@ public class CirclePresenter {
 					newItem = DatasUtil.createReplyComment(config.replyUser, content);
 				}
 
-				mCircleView.update2AddComment(config.circlePosition, newItem);
+				getView().update2AddComment(config.circlePosition, newItem);
 			}
 
 		});
@@ -124,7 +122,7 @@ public class CirclePresenter {
 
 			@Override
 			public void loadSuccess(Object object) {
-				mCircleView.update2DeleteComment(circlePosition, commentId);
+				getView().update2DeleteComment(circlePosition, commentId);
 			}
 			
 		});
@@ -135,7 +133,7 @@ public class CirclePresenter {
 	 * @param commentConfig
 	 */
 	public void showEditTextBody(CommentConfig commentConfig){
-		mCircleView.updateEditTextBodyVisible(View.VISIBLE, commentConfig);
+		getView().updateEditTextBodyVisible(View.VISIBLE, commentConfig);
 	}
 
 }
