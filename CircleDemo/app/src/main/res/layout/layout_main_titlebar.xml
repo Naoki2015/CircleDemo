@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.yiw.circledemo.widgets.TitleBar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_title_bar"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:background="@color/white"
+   >
+
+</com.yiw.circledemo.widgets.TitleBar>
