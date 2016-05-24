@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/videoBody"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@color/white">
+
+    <com.yiw.circledemo.widgets.CircleVideoView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        />
+
+</LinearLayout>

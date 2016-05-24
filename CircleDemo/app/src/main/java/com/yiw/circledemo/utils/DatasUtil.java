@@ -92,13 +92,18 @@ public class DatasUtil {
 
 			item.setFavorters(createFavortItemList());
 			item.setComments(createCommentItemList());
-			if (getRandomNum(10) % 2 == 0) {
+			int type = getRandomNum(10) % 3;
+			if (type == 0) {
 				item.setType("1");// 链接
 				item.setLinkImg("http://pics.sc.chinaz.com/Files/pic/icons128/2264/%E8%85%BE%E8%AE%AFQQ%E5%9B%BE%E6%A0%87%E4%B8%8B%E8%BD%BD1.png");
 				item.setLinkTitle("百度一下，你就知道");
-			} else {
+			} else if(type == 1){
 				item.setType("2");// 图片
 				item.setPhotos(createPhotos());
+			}else {
+				item.setType("3");// 图片
+				String videoUrl = "http://7xsqyg.com1.z0.glb.clouddn.com/DA77A3CB-E815-4D45-BC86-E75ECE74F87B.mp4";
+				item.setVideoUrl(videoUrl);
 			}
 			circleDatas.add(item);
 		}

@@ -19,13 +19,14 @@ public class CircleItem extends BaseBean{
 	private String id;
 	private String content;
 	private String createTime;
-	private String type;//1:链接  2:图片
+	private String type;//1:链接  2:图片 3:视频
 	private String linkImg;
 	private String linkTitle;
 	private List<String> photos;
 	private List<FavortItem> favorters;
 	private List<CommentItem> comments;
 	private User user;
+	private String videoUrl;
 	
 	public String getId() {
 		return id;
@@ -87,7 +88,15 @@ public class CircleItem extends BaseBean{
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
+	public String getVideoUrl() {
+		return videoUrl;
+	}
+
+	public void setVideoUrl(String videoUrl) {
+		this.videoUrl = videoUrl;
+	}
+
 	public boolean hasFavort(){
 		if(favorters!=null && favorters.size()>0){
 			return true;

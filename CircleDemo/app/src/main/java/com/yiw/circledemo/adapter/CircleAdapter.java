@@ -1,6 +1,7 @@
 package com.yiw.circledemo.adapter;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -25,12 +26,15 @@ import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
 import com.yiw.circledemo.spannable.ISpanClick;
 import com.yiw.circledemo.utils.DatasUtil;
+import com.yiw.circledemo.widgets.CircleVideoView;
 import com.yiw.circledemo.widgets.CircularImage;
 import com.yiw.circledemo.widgets.CommentListView;
 import com.yiw.circledemo.widgets.FavortListView;
 import com.yiw.circledemo.widgets.MultiImageView;
 import com.yiw.circledemo.widgets.SnsPopupWindow;
 import com.yiw.circledemo.widgets.dialog.CommentDialog;
+import com.yiw.circledemo.widgets.videolist.model.VideoLoadMvpView;
+import com.yiw.circledemo.widgets.videolist.widget.TextureVideoView;
 
 import java.util.List;
 
@@ -43,6 +47,14 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     public final static int TYPE_URL = 1;
     public final static int TYPE_IMAGE = 2;
     public final static int TYPE_VIDEO = 3;
+
+    private static final int STATE_IDLE = 0;
+    private static final int STATE_ACTIVED = 1;
+    private static final int STATE_DEACTIVED = 2;
+    private int videoState = STATE_IDLE;
+
+    int curPlayIndex=-1;
+
     private CirclePresenter presenter;
     private Context context;
     public void setCirclePresenter(CirclePresenter presenter){
@@ -91,7 +103,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
         if(getItemViewType(position)==TYPE_HEAD){
             HeaderViewHolder holder = (HeaderViewHolder) viewHolder;
         }else{
-            CircleViewHolder holder = (CircleViewHolder) viewHolder;
+            final CircleViewHolder holder = (CircleViewHolder) viewHolder;
             CircleItem circleItem = (CircleItem) datas.get(position);
             final String circleId = circleItem.getId();
             String name = circleItem.getUser().getName();
@@ -230,6 +242,16 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                         holder.multiImageView.setVisibility(View.GONE);
                     }
                     break;
+                case TYPE_VIDEO:
+                    holder.videoView.setVideoUrl(circleItem.getVideoUrl());
+                    holder.videoView.setPostion(position);
+                    holder.videoView.setOnPlayClickListener(new CircleVideoView.OnPlayClickListener() {
+                        @Override
+                        public void onPlayClick(int pos) {
+                            curPlayIndex = pos;
+                        }
+                    });
+                    break;
                 default:
                     break;
             }
@@ -249,7 +271,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
         }
     }
 
-    public class CircleViewHolder extends RecyclerView.ViewHolder{
+    public class CircleViewHolder extends RecyclerView.ViewHolder implements VideoLoadMvpView {
         public int viewType;
 
         public CircularImage headIv;
@@ -275,9 +297,10 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
         public TextView urlContentTv;
         /** 图片*/
         public MultiImageView multiImageView;
+
+        public CircleVideoView videoView;
         // ===========================
         public FavortListAdapter favortListAdapter;
-        //public CommentAdapter bbsAdapter;
         public CommentAdapter commentAdapter;
         public SnsPopupWindow snsPopupWindow;
 
@@ -306,7 +329,13 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                     }
                     break;
                 case TYPE_VIDEO:
+                    viewStub.setLayoutResource(R.layout.viewstub_videobody);
+                    viewStub.inflate();
 
+                    CircleVideoView videoBody = (CircleVideoView) itemView.findViewById(R.id.videoView);
+                    if(videoBody!=null){
+                        this.videoView = videoBody;
+                    }
                     break;
                 default:
                     break;
@@ -332,6 +361,31 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             commentList.setAdapter(commentAdapter);
 
             snsPopupWindow = new SnsPopupWindow(itemView.getContext());
+
+        }
+
+        @Override
+        public TextureVideoView getVideoView() {
+            return null;
+        }
+
+        @Override
+        public void videoBeginning() {
+
+        }
+
+        @Override
+        public void videoStopped() {
+
+        }
+
+        @Override
+        public void videoPrepared(MediaPlayer player) {
+
+        }
+
+        @Override
+        public void videoResourceReady(String videoPath) {
 
         }
     }

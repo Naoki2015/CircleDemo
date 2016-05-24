@@ -11,6 +11,8 @@
     <color name="transparent">#00000000</color>
     <color name="bg_no_photo">#EEEEEE</color>
     <color name="title_bg">#373B3E</color>
+    <color name="video_bg">#ededed</color>
+    <color name="colorAccent">#FF4081</color>
 
 
     <color name="white">#ffffffff</color>
