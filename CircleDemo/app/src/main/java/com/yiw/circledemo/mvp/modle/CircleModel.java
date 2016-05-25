@@ -15,6 +15,10 @@ public class CircleModel {
 	public CircleModel(){
 		//
 	}
+
+	public void loadData(final IDataRequestListener listener){
+		requestServer(listener);
+	}
 	
 	public void deleteCircle( final IDataRequestListener listener) {
 		requestServer(listener);

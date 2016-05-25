@@ -1,8 +1,12 @@
 package com.yiw.circledemo.mvp.view;
 
+import com.yiw.circledemo.bean.CircleItem;
 import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
+
+import java.util.List;
+
 /**
  * 
 * @ClassName: ICircleViewUpdateListener 
@@ -21,4 +25,7 @@ public interface ICircleView extends BaseView{
 
 	public void updateEditTextBodyVisible(int visibility, CommentConfig commentConfig);
 
+	void update2loadData(int loadType, List<CircleItem> datas);
 }
+
+

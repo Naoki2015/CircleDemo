@@ -2,6 +2,7 @@ package com.yiw.circledemo.mvp.presenter;
 
 import android.view.View;
 
+import com.yiw.circledemo.bean.CircleItem;
 import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
@@ -9,6 +10,8 @@ import com.yiw.circledemo.mvp.modle.CircleModel;
 import com.yiw.circledemo.mvp.modle.IDataRequestListener;
 import com.yiw.circledemo.mvp.view.ICircleView;
 import com.yiw.circledemo.utils.DatasUtil;
+
+import java.util.List;
 
 /**
  * 
@@ -24,6 +27,14 @@ public class CirclePresenter extends BasePresenter<ICircleView>{
 	public CirclePresenter(){
 		mCircleModel = new CircleModel();
 	}
+
+	public void loadData(int loadType){
+
+        List<CircleItem> datas = DatasUtil.createCircleDatas();
+        getView().update2loadData(loadType, datas);
+	}
+
+
 	/**
 	 * 
 	* @Title: deleteCircle 

@@ -72,7 +72,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
         }
 
         int itemType = 0;
-        CircleItem item = (CircleItem) datas.get(position);
+        CircleItem item = (CircleItem) datas.get(position-1);
         if (CircleItem.TYPE_URL.equals(item.getType())) {
             itemType = TYPE_URL;
         } else if (CircleItem.TYPE_IMG.equals(item.getType())) {
@@ -103,8 +103,9 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
         if(getItemViewType(position)==TYPE_HEAD){
             HeaderViewHolder holder = (HeaderViewHolder) viewHolder;
         }else{
+
             final CircleViewHolder holder = (CircleViewHolder) viewHolder;
-            CircleItem circleItem = (CircleItem) datas.get(position);
+            CircleItem circleItem = (CircleItem) datas.get(position-1);
             final String circleId = circleItem.getId();
             String name = circleItem.getUser().getName();
             String headImg = circleItem.getUser().getHeadUrl();
@@ -260,7 +261,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
 
     @Override
     public int getItemCount() {
-        return datas.size();
+        return datas.size()+1;//有head需要加1
     }
 
 

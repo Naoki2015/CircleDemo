@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.malinskiy.superrecyclerview.OnMoreListener;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.yiw.circledemo.adapter.CircleAdapter;
 import com.yiw.circledemo.bean.CircleItem;
@@ -30,7 +31,6 @@ import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
 import com.yiw.circledemo.mvp.view.ICircleView;
 import com.yiw.circledemo.utils.CommonUtils;
-import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.widgets.CommentListView;
 import com.yiw.circledemo.widgets.DivItemDecoration;
 import com.yiw.circledemo.widgets.TitleBar;
@@ -65,6 +65,9 @@ public class MainActivity extends Activity implements ICircleView{
 	private LinearLayoutManager layoutManager;
     private TitleBar titleBar;
 
+    private final static int TYPE_PULLREFRESH = 1;
+    private final static int TYPE_UPLOADREFRESH = 2;
+
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -72,7 +75,7 @@ public class MainActivity extends Activity implements ICircleView{
 		mPresenter = new CirclePresenter();
         mPresenter.attachView(this);
 		initView();
-		loadData();
+        mPresenter.loadData(TYPE_PULLREFRESH);
 	}
 
 	@SuppressLint({ "ClickableViewAccessibility", "InlinedApi" })
@@ -102,12 +105,13 @@ public class MainActivity extends Activity implements ICircleView{
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        loadData();
+                        mPresenter.loadData(TYPE_PULLREFRESH);
                         recyclerView.setRefreshing(false);
                     }
                 }, 2000);
             }
         });
+
 
 
 		mAdapter = new CircleAdapter(this);
@@ -201,13 +205,6 @@ public class MainActivity extends Activity implements ICircleView{
 	}
 
 
-	private void loadData() {
-		List<CircleItem> datas = DatasUtil.createCircleDatas();
-		mAdapter.setDatas(datas);
-		mAdapter.notifyDataSetChanged();
-	}
-
-
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -295,8 +292,37 @@ public class MainActivity extends Activity implements ICircleView{
 		}
 	}
 
+    @Override
+    public void update2loadData(int loadType, List<CircleItem> datas) {
+        if (loadType == TYPE_PULLREFRESH){
+            mAdapter.setDatas(datas);
+        }else if(loadType == TYPE_UPLOADREFRESH){
+            mAdapter.getDatas().addAll(datas);
+        }
+        mAdapter.notifyDataSetChanged();
 
-	/**
+        if(mAdapter.getDatas().size()<45+1){
+            recyclerView.setupMoreListener(new OnMoreListener() {
+                @Override
+                public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPresenter.loadData(TYPE_UPLOADREFRESH);
+                        }
+                    }, 2000);
+
+                }
+            }, 1);
+        }else{
+            recyclerView.removeMoreListener();
+        }
+
+    }
+
+
+    /**
 	 * 测量偏移量
 	 * @param commentConfig
 	 * @return

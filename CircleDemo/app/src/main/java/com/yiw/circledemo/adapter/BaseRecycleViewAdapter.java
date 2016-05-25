@@ -13,6 +13,8 @@ public abstract class BaseRecycleViewAdapter<T,VH extends RecyclerView.ViewHolde
     protected List<T> datas = new ArrayList<T>();
 
     public List<T> getDatas() {
+        if (datas==null)
+            datas = new ArrayList<T>();
         return datas;
     }
 
