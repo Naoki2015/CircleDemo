@@ -184,8 +184,8 @@ public class MainActivity extends Activity implements ICircleView{
             	mEditTextBodyHeight = mEditTextBody.getHeight();
 
 				//偏移listview
-				if(recyclerView!=null && mCommentConfig != null){
-					layoutManager.scrollToPositionWithOffset(mCommentConfig.circlePosition, getListviewOffset(mCommentConfig));
+				if(layoutManager!=null && mCommentConfig != null){
+					layoutManager.scrollToPositionWithOffset(mCommentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE, getListviewOffset(mCommentConfig));
 				}
             }
         });
@@ -347,7 +347,7 @@ public class MainActivity extends Activity implements ICircleView{
 
 		int firstPosition = layoutManager.findFirstVisibleItemPosition();
 		//只能返回当前可见区域（列表可滚动）的子项
-        View selectCircleItem = layoutManager.getChildAt(commentConfig.circlePosition - firstPosition);
+        View selectCircleItem = layoutManager.getChildAt(commentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE - firstPosition);
 
 		if(selectCircleItem != null){
 			mSelectCircleItemH = selectCircleItem.getHeight();

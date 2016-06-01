@@ -52,6 +52,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     private static final int STATE_ACTIVED = 1;
     private static final int STATE_DEACTIVED = 2;
     private int videoState = STATE_IDLE;
+    public static final int HEADVIEW_SIZE = 1;
 
     int curPlayIndex=-1;
 
@@ -104,8 +105,9 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             HeaderViewHolder holder = (HeaderViewHolder) viewHolder;
         }else{
 
+            final int circlePosition = position - HEADVIEW_SIZE;
             final CircleViewHolder holder = (CircleViewHolder) viewHolder;
-            CircleItem circleItem = (CircleItem) datas.get(position-1);
+            CircleItem circleItem = (CircleItem) datas.get(circlePosition);
             final String circleId = circleItem.getId();
             String name = circleItem.getUser().getName();
             String headImg = circleItem.getUser().getHeadUrl();
@@ -160,12 +162,12 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                             CommentItem commentItem = commentsDatas.get(commentPosition);
                             if(DatasUtil.curUser.getId().equals(commentItem.getUser().getId())){//复制或者删除自己的评论
 
-                                CommentDialog dialog = new CommentDialog(context, presenter, commentItem, position);
+                                CommentDialog dialog = new CommentDialog(context, presenter, commentItem, circlePosition);
                                 dialog.show();
                             }else{//回复别人的评论
                                 if(presenter != null){
                                     CommentConfig config = new CommentConfig();
-                                    config.circlePosition = position;
+                                    config.circlePosition = circlePosition;
                                     config.commentPosition = commentPosition;
                                     config.commentType = CommentConfig.Type.REPLY;
                                     config.replyUser = commentItem.getUser();
@@ -179,7 +181,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                         public void onItemLongClick(int commentPosition) {
                             //长按进行复制或者删除
                             CommentItem commentItem = commentsDatas.get(commentPosition);
-                            CommentDialog dialog = new CommentDialog(context, presenter, commentItem, position);
+                            CommentDialog dialog = new CommentDialog(context, presenter, commentItem, circlePosition);
                             dialog.show();
                         }
                     });
@@ -207,7 +209,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                 snsPopupWindow.getmActionItems().get(0).mTitle = "赞";
             }
             snsPopupWindow.update();
-            snsPopupWindow.setmItemClickListener(new PopupItemClickListener(position, circleItem, curUserFavortId));
+            snsPopupWindow.setmItemClickListener(new PopupItemClickListener(circlePosition, circleItem, curUserFavortId));
             holder.snsBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
