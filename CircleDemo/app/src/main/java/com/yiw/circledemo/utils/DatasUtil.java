@@ -17,7 +17,13 @@ import java.util.Random;
 *
  */
 public class DatasUtil {
-	public static final String[] CONTENTS = { "", "哈哈", "今天是个好日子", "呵呵", "图不错",
+	public static final String[] CONTENTS = { "",
+			"哈哈，VR013  http://www.vr013.com;一个不错的VR网站",
+			"今天是个好日子，http://www.vr013.com;一个不错的VR网站",
+			"呵呵，http://www.vr013.com;一个不错的VR网站",
+			"只有http|https|ftp|svn://开头的网址才能识别为网址，正则表达式写的不太好，如果你又更好的正则表达式请评论告诉我，谢谢！",
+			"哈哈哈哈",
+			"图不错",
 			"我勒个去" };
 	public static final String[] PHOTOS = {
 			"http://f.hiphotos.baidu.com/image/pic/item/faf2b2119313b07e97f760d908d7912396dd8c9c.jpg",

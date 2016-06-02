@@ -6,12 +6,13 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
+import android.view.View;
 
 import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
 import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.spannable.CircleMovementMethod;
-import com.yiw.circledemo.spannable.NameClickable;
+import com.yiw.circledemo.spannable.SpannableClickable;
 import com.yiw.circledemo.widgets.FavortListView;
 
 import java.util.List;
@@ -86,9 +87,16 @@ public class FavortListAdapter {
     }
 
     @NonNull
-    private SpannableString setClickableSpan(String textStr, int position) {
+    private SpannableString setClickableSpan(String textStr, final int position) {
         SpannableString subjectSpanText = new SpannableString(textStr);
-        subjectSpanText.setSpan(new NameClickable(mListView.getSpanClickListener(), position), 0, subjectSpanText.length(),
+        subjectSpanText.setSpan(new SpannableClickable(){
+                                    @Override
+                                    public void onClick(View widget) {
+                                        if(mListView.getSpanClickListener()!=null){
+                                            mListView.getSpanClickListener().onClick(position);
+                                        }
+                                    }
+                                }, 0, subjectSpanText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return subjectSpanText;
     }

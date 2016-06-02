@@ -301,7 +301,7 @@ public class MainActivity extends Activity implements ICircleView{
         }
         mAdapter.notifyDataSetChanged();
 
-        if(mAdapter.getDatas().size()<45+1){
+        if(mAdapter.getDatas().size()<45 + CircleAdapter.HEADVIEW_SIZE){
             recyclerView.setupMoreListener(new OnMoreListener() {
                 @Override
                 public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {

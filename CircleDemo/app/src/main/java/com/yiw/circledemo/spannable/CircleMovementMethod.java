@@ -92,7 +92,7 @@ public class CircleMovementMethod extends BaseMovementMethod {
         }else if(action == MotionEvent.ACTION_UP){
             if(mClickLinks.length > 0){
                 mClickLinks[0].onClick(widget);
-                if(mBgSpan != null){
+                if(mBgSpan != null){//移除点击时设置的背景span
                     buffer.removeSpan(mBgSpan);
                 }
 
@@ -102,9 +102,9 @@ public class CircleMovementMethod extends BaseMovementMethod {
             Selection.removeSelection(buffer);
             widget.setBackgroundResource(DEFAULT_COLOR);
         }else if(action == MotionEvent.ACTION_MOVE){
-
+            //这种情况不用做处理
         }else{
-            if(mBgSpan != null){
+            if(mBgSpan != null){//移除点击时设置的背景span
                 buffer.removeSpan(mBgSpan);
             }
             widget.setBackgroundResource(DEFAULT_COLOR);

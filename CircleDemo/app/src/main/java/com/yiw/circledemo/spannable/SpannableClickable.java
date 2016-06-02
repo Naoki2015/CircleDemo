@@ -12,18 +12,17 @@ import com.yiw.circledemo.R;
  * @Description:
  * @date 16/1/2 16:32
  */
-public class NameClickable extends ClickableSpan implements View.OnClickListener {
-    private final ISpanClick mListener;
-    private int mPosition;
+public abstract class SpannableClickable extends ClickableSpan implements View.OnClickListener {
 
-    public NameClickable(ISpanClick l, int position) {
-        mListener = l;
-        mPosition = position;
+    private int DEFAULT_COLOR_ID = R.color.color_8290AF;
+    private int textColorId = DEFAULT_COLOR_ID;
+
+    public SpannableClickable() {
+
     }
 
-    @Override
-    public void onClick(View widget) {
-        mListener.onClick(mPosition);
+    public SpannableClickable(int textColorId){
+        this.textColorId = textColorId;
     }
 
     @Override
@@ -31,7 +30,7 @@ public class NameClickable extends ClickableSpan implements View.OnClickListener
         super.updateDrawState(ds);
 
         int colorValue = MyApplication.getContext().getResources().getColor(
-                R.color.color_8290AF);
+                textColorId);
         ds.setColor(colorValue);
         ds.setUnderlineText(false);
         ds.clearShadowLayer();

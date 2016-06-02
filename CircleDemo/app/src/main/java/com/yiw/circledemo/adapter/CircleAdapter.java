@@ -24,8 +24,10 @@ import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
+import com.yiw.circledemo.spannable.CircleMovementMethod;
 import com.yiw.circledemo.spannable.ISpanClick;
 import com.yiw.circledemo.utils.DatasUtil;
+import com.yiw.circledemo.utils.UrlUtils;
 import com.yiw.circledemo.widgets.CircleVideoView;
 import com.yiw.circledemo.widgets.CircularImage;
 import com.yiw.circledemo.widgets.CommentListView;
@@ -121,7 +123,12 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             ImageLoader.getInstance().displayImage(headImg, holder.headIv);
             holder.nameTv.setText(name);
             holder.timeTv.setText(createTime);
-            holder.contentTv.setText(content);
+
+            if(!TextUtils.isEmpty(content)){
+                holder.contentTv.setText(UrlUtils.formatUrlString(content));
+                holder.contentTv.setMovementMethod(new CircleMovementMethod(R.color.name_selector_color,
+                        R.color.name_selector_color));
+            }
             holder.contentTv.setVisibility(TextUtils.isEmpty(content) ? View.GONE : View.VISIBLE);
 
             if(DatasUtil.curUser.getId().equals(circleItem.getUser().getId())){
@@ -265,7 +272,6 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     public int getItemCount() {
         return datas.size()+1;//有head需要加1
     }
-
 
     public class HeaderViewHolder extends RecyclerView.ViewHolder{
 

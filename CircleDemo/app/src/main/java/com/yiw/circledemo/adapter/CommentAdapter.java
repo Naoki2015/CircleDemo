@@ -10,12 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.spannable.CircleMovementMethod;
-import com.yiw.circledemo.spannable.NameClickListener;
-import com.yiw.circledemo.spannable.NameClickable;
+import com.yiw.circledemo.spannable.SpannableClickable;
+import com.yiw.circledemo.utils.UrlUtils;
 import com.yiw.circledemo.widgets.CommentListView;
 
 import java.util.ArrayList;
@@ -77,7 +79,7 @@ public class CommentAdapter {
     }
 
     private View getView(final int position){
-        System.out.println("CommentAdapter getView-----------------------" + position);
+
         View convertView = View.inflate(mContext,
                 R.layout.im_social_item_comment, null);
         TextView commentTv = (TextView) convertView.findViewById(R.id.commentTv);
@@ -93,19 +95,17 @@ public class CommentAdapter {
         }
 
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(setClickableSpan(name, 0));
+        builder.append(setClickableSpan(name, bean.getUser().getId()));
 
         if (!TextUtils.isEmpty(toReplyName)) {
 
             builder.append(" 回复 ");
-            builder.append(setClickableSpan(toReplyName, 1));
+            builder.append(setClickableSpan(toReplyName, bean.getToReplyUser().getId()));
         }
         builder.append(": ");
         //转换表情字符
         String contentBodyStr = bean.getContent();
-        //SpannableString contentSpanText = new SpannableString(contentBodyStr);
-        //contentSpanText.setSpan(new UnderlineSpan(), 0, contentSpanText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builder.append(contentBodyStr);
+        builder.append(UrlUtils.formatUrlString(contentBodyStr));
         commentTv.setText(builder);
 
         commentTv.setMovementMethod(circleMovementMethod);
@@ -133,10 +133,14 @@ public class CommentAdapter {
     }
 
     @NonNull
-    private SpannableString setClickableSpan(String textStr, int position) {
+    private SpannableString setClickableSpan(final String textStr, final String id) {
         SpannableString subjectSpanText = new SpannableString(textStr);
-        subjectSpanText.setSpan(new NameClickable(new NameClickListener(
-                        subjectSpanText, ""), position), 0, subjectSpanText.length(),
+        subjectSpanText.setSpan(new SpannableClickable(){
+                                    @Override
+                                    public void onClick(View widget) {
+                                        Toast.makeText(MyApplication.getContext(), textStr + " &id = " + id, Toast.LENGTH_SHORT).show();
+                                    }
+                                }, 0, subjectSpanText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return subjectSpanText;
     }
