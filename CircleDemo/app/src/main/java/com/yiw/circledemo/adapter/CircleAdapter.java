@@ -24,7 +24,6 @@ import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
-import com.yiw.circledemo.spannable.CircleMovementMethod;
 import com.yiw.circledemo.spannable.ISpanClick;
 import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.utils.UrlUtils;
@@ -32,6 +31,7 @@ import com.yiw.circledemo.widgets.CircleVideoView;
 import com.yiw.circledemo.widgets.CircularImage;
 import com.yiw.circledemo.widgets.CommentListView;
 import com.yiw.circledemo.widgets.FavortListView;
+import com.yiw.circledemo.widgets.MagicTextView;
 import com.yiw.circledemo.widgets.MultiImageView;
 import com.yiw.circledemo.widgets.SnsPopupWindow;
 import com.yiw.circledemo.widgets.dialog.CommentDialog;
@@ -126,8 +126,6 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
 
             if(!TextUtils.isEmpty(content)){
                 holder.contentTv.setText(UrlUtils.formatUrlString(content));
-                holder.contentTv.setMovementMethod(new CircleMovementMethod(R.color.name_selector_color,
-                        R.color.name_selector_color));
             }
             holder.contentTv.setVisibility(TextUtils.isEmpty(content) ? View.GONE : View.VISIBLE);
 
@@ -287,7 +285,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
         public TextView nameTv;
         public TextView urlTipTv;
         /** 动态的内容 */
-        public TextView contentTv;
+        public MagicTextView contentTv;
         public TextView timeTv;
         public TextView deleteBtn;
         public ImageView snsBtn;
@@ -353,7 +351,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             nameTv = (TextView) itemView.findViewById(R.id.nameTv);
             digLine = itemView.findViewById(R.id.lin_dig);
 
-            contentTv = (TextView) itemView.findViewById(R.id.contentTv);
+            contentTv = (MagicTextView) itemView.findViewById(R.id.contentTv);
             urlTipTv = (TextView) itemView.findViewById(R.id.urlTipTv);
             timeTv = (TextView) itemView.findViewById(R.id.timeTv);
             deleteBtn = (TextView) itemView.findViewById(R.id.deleteBtn);

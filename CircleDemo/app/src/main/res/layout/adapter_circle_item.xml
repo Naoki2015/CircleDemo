@@ -48,15 +48,22 @@
                     android:textColor="@color/color_aeaeae"
                     android:textSize="14sp" />
             </LinearLayout>
+            <!--<TextView-->
+                <!--android:id="@+id/contentTv"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:paddingBottom="5dip"-->
+                <!--android:paddingTop="5dip"-->
+                <!--android:textColor="@color/color_232323"-->
+                <!--android:textSize="14sp" />-->
 
-            <TextView
+            <com.yiw.circledemo.widgets.MagicTextView
                 android:id="@+id/contentTv"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dip"
-                android:paddingTop="5dip"
-                android:textColor="@color/color_232323"
-                android:textSize="14sp" />
+                android:paddingTop="5dip" />
+
             <!-- 不同的地方 -->
 			<ViewStub 
 			    android:id="@+id/viewStub"

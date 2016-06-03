@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:background="@color/white"
+    android:gravity="center">
+
+    <com.mikhaellopez.circularprogressbar.CircularProgressBar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/video_progress"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:visibility="visible"
+        app:cpb_background_progressbar_color="@color/white"
+        app:cpb_background_progressbar_width="3dp"
+        app:cpb_progressbar_color="@color/colorAccent"
+        app:cpb_progressbar_width="3dp" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textSize="12sp"
+        android:textColor="@color/color_232323"
         android:gravity="center"
         android:text="正在加载..."/>
 </LinearLayout>
