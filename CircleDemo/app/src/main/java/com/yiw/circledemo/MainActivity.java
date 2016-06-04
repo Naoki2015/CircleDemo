@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -87,6 +88,7 @@ public class MainActivity extends Activity implements ICircleView{
 		layoutManager = new LinearLayoutManager(this);
 		recyclerView.setLayoutManager(layoutManager);
 		recyclerView.addItemDecoration(new DivItemDecoration(2, true));
+        recyclerView.getMoreProgressView().getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
 
 		recyclerView.setOnTouchListener(new OnTouchListener() {
 			@Override
