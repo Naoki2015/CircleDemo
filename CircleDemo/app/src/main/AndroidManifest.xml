@@ -32,6 +32,10 @@
         <activity android:name=".ImagePagerActivity"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Black.NoTitleBar" ></activity>
+
+        <meta-data
+            android:name="com.yiw.circledemo.MyGlideModule"
+            android:value="GlideModule" />
     </application>
 
 </manifest>

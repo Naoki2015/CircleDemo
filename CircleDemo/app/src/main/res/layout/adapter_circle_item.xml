@@ -11,7 +11,7 @@
         android:layout_margin="10dp"
         android:orientation="horizontal" >
 
-        <com.yiw.circledemo.widgets.CircularImage
+        <ImageView
             android:id="@+id/headIv"
             android:layout_width="48dp"
             android:layout_height="48dp"

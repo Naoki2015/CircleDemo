@@ -7,7 +7,8 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yiw.circledemo.utils.DensityUtil;
 
 import java.util.List;
@@ -177,28 +178,31 @@ public class MultiImageView extends LinearLayout {
 			imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ?moreParaColumnFirst : morePara);
 		}else {
 			imageView.setAdjustViewBounds(true);
-			imageView.setScaleType(ScaleType.FIT_START);
+			imageView.setScaleType(ScaleType.CENTER_INSIDE);
 			imageView.setMaxHeight(pxOneMaxWandH);
 			imageView.setLayoutParams(onePicPara);
 		}
 
-		imageView.setTag(position);
 		imageView.setId(url.hashCode());
-		imageView.setOnClickListener(mImageViewOnClickListener);
-		ImageLoader.getInstance().displayImage(url, imageView);
+		imageView.setOnClickListener(new ImageOnClickListener(position));
+		Glide.with(getContext()).load(url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
 		return imageView;
 	}
 
-	// 图片点击事件
-	private View.OnClickListener mImageViewOnClickListener = new OnClickListener() {
+	private class ImageOnClickListener implements View.OnClickListener{
+
+		private int position;
+		public ImageOnClickListener(int position){
+			this.position = position;
+		}
 
 		@Override
 		public void onClick(View view) {
 			if(mOnItemClickListener != null){
-				mOnItemClickListener.onItemClick(view, (Integer)view.getTag());
+				mOnItemClickListener.onItemClick(view, position);
 			}
 		}
-	};
+	}
 
 	public interface OnItemClickListener{
 		public void onItemClick(View view, int position);

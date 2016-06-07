@@ -13,8 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yiw.circledemo.ImagePagerActivity;
 import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
@@ -26,6 +26,7 @@ import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
 import com.yiw.circledemo.spannable.ISpanClick;
 import com.yiw.circledemo.utils.DatasUtil;
+import com.yiw.circledemo.utils.GlideCircleTransform;
 import com.yiw.circledemo.utils.UrlUtils;
 import com.yiw.circledemo.widgets.CircleVideoView;
 import com.yiw.circledemo.widgets.CircularImage;
@@ -120,7 +121,8 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             boolean hasFavort = circleItem.hasFavort();
             boolean hasComment = circleItem.hasComment();
 
-            ImageLoader.getInstance().displayImage(headImg, holder.headIv);
+            Glide.with(context).load(headImg).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.color.bg_no_photo).transform(new GlideCircleTransform(context)).into(holder.headIv);
+
             holder.nameTv.setText(name);
             holder.timeTv.setText(createTime);
 
@@ -228,7 +230,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                 case TYPE_URL:// 处理链接动态的链接内容和和图片
                     String linkImg = circleItem.getLinkImg();
                     String linkTitle = circleItem.getLinkTitle();
-                    ImageLoader.getInstance().displayImage(linkImg, holder.urlImageIv);
+                    Glide.with(context).load(linkImg).into(holder.urlImageIv);
                     holder.urlContentTv.setText(linkTitle);
                     holder.urlBody.setVisibility(View.VISIBLE);
                     holder.urlTipTv.setVisibility(View.VISIBLE);
@@ -241,9 +243,9 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                         holder.multiImageView.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
                             @Override
                             public void onItemClick(View view, int position) {
-                                // 因为单张图片时，图片实际大小是自适应的，imageLoader缓存时是按测量尺寸缓存的
-                                ImagePagerActivity.imageSize = new ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
-                                ImagePagerActivity.startImagePagerActivity(context, photos, position);
+                                //imagesize是作为loading时的图片size
+                                ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
+                                ImagePagerActivity.startImagePagerActivity(context, photos, position, imageSize);
                             }
                         });
                     } else {
@@ -281,7 +283,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     public class CircleViewHolder extends RecyclerView.ViewHolder implements VideoLoadMvpView {
         public int viewType;
 
-        public CircularImage headIv;
+        public ImageView headIv;
         public TextView nameTv;
         public TextView urlTipTv;
         /** 动态的内容 */
@@ -347,7 +349,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                 default:
                     break;
             }
-            headIv = (CircularImage) itemView.findViewById(R.id.headIv);
+            headIv = (ImageView) itemView.findViewById(R.id.headIv);
             nameTv = (TextView) itemView.findViewById(R.id.nameTv);
             digLine = itemView.findViewById(R.id.lin_dig);
 

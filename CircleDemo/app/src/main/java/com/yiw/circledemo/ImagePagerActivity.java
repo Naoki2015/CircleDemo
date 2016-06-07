@@ -3,7 +3,7 @@ package com.yiw.circledemo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
@@ -17,15 +17,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,15 +35,20 @@ import uk.co.senab.photoview.PhotoView;
 public class ImagePagerActivity extends Activity{
     public static final String INTENT_IMGURLS = "imgurls";
     public static final String INTENT_POSITION = "position";
+    public static final String INTENT_IMAGESIZE = "imagesize";
+
     private List<View> guideViewList = new ArrayList<View>();
     private LinearLayout guideGroup;
-    public static ImageSize imageSize;
+    public ImageSize imageSize;
+    private int startPos;
+    private ArrayList<String> imgUrls;
 
 
-    public static void startImagePagerActivity(Context context, List<String> imgUrls, int position){
+    public static void startImagePagerActivity(Context context, List<String> imgUrls, int position, ImageSize imageSize){
         Intent intent = new Intent(context, ImagePagerActivity.class);
         intent.putStringArrayListExtra(INTENT_IMGURLS, new ArrayList<String>(imgUrls));
         intent.putExtra(INTENT_POSITION, position);
+        intent.putExtra(INTENT_IMAGESIZE, imageSize);
         context.startActivity(intent);
     }
 
@@ -56,11 +59,11 @@ public class ImagePagerActivity extends Activity{
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         guideGroup = (LinearLayout) findViewById(R.id.guideGroup);
 
-        int startPos = getIntent().getIntExtra(INTENT_POSITION, 0);
-        ArrayList<String> imgUrls = getIntent().getStringArrayListExtra(INTENT_IMGURLS);
+        getIntentData();
 
         ImageAdapter mAdapter = new ImageAdapter(this);
         mAdapter.setDatas(imgUrls);
+        mAdapter.setImageSize(imageSize);
         viewPager.setAdapter(mAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -86,6 +89,12 @@ public class ImagePagerActivity extends Activity{
         addGuideView(guideGroup, startPos, imgUrls);
     }
 
+    private void getIntentData() {
+        startPos = getIntent().getIntExtra(INTENT_POSITION, 0);
+        imgUrls = getIntent().getStringArrayListExtra(INTENT_IMGURLS);
+        imageSize = (ImageSize) getIntent().getSerializableExtra(INTENT_IMAGESIZE);
+    }
+
     private void addGuideView(LinearLayout guideGroup, int startPos, ArrayList<String> imgUrls) {
         if(imgUrls!=null && imgUrls.size()>0){
             guideViewList.clear();
@@ -106,27 +115,21 @@ public class ImagePagerActivity extends Activity{
 
         private List<String> datas = new ArrayList<String>();
         private LayoutInflater inflater;
-        private DisplayImageOptions options;
         private Context context;
+        private ImageSize imageSize;
+        private ImageView smallImageView = null;
 
         public void setDatas(List<String> datas) {
             if(datas != null )
                 this.datas = datas;
         }
+        public void setImageSize(ImageSize imageSize){
+            this.imageSize = imageSize;
+        }
 
         public ImageAdapter(Context context){
             this.context = context;
             this.inflater = LayoutInflater.from(context);
-            options = new DisplayImageOptions.Builder()
-                    .showImageForEmptyUri(R.drawable.ic_launcher)
-                    .showImageOnFail(R.drawable.ic_launcher)
-                    .resetViewBeforeLoading(true)
-                    .cacheOnDisk(true)
-                    .imageScaleType(ImageScaleType.EXACTLY)
-                    .bitmapConfig(Bitmap.Config.RGB_565)
-                    .considerExifParams(true)
-                    .displayer(new FadeInBitmapDisplayer(300))
-                    .build();
         }
 
         @Override
@@ -141,13 +144,17 @@ public class ImagePagerActivity extends Activity{
             View view = inflater.inflate(R.layout.item_pager_image, container, false);
             if(view != null){
                 final PhotoView imageView = (PhotoView) view.findViewById(R.id.image);
-                //预览imageView
-                final ImageView smallImageView = new ImageView(context);
-                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(imageSize.getWidth(), imageSize.getHeight());
-                layoutParams.gravity = Gravity.CENTER;
-                smallImageView.setLayoutParams(layoutParams);
-                smallImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                ((FrameLayout)view).addView(smallImageView);
+
+                if(imageSize!=null){
+                    //预览imageView
+                    smallImageView = new ImageView(context);
+                    FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(imageSize.getWidth(), imageSize.getHeight());
+                    layoutParams.gravity = Gravity.CENTER;
+                    smallImageView.setLayoutParams(layoutParams);
+                    smallImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    ((FrameLayout)view).addView(smallImageView);
+                }
+
                 //loading
                 final ProgressBar loading = new ProgressBar(context);
                 FrameLayout.LayoutParams loadingLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -157,30 +164,41 @@ public class ImagePagerActivity extends Activity{
                 ((FrameLayout)view).addView(loading);
 
                 final String imgurl = datas.get(position);
-                ImageLoader.getInstance().displayImage(imgurl, imageView, options, new SimpleImageLoadingListener(){
-                    @Override
-                    public void onLoadingStarted(String imageUri, View view) {
-                        //获取内存中的缩略图
-                        String memoryCacheKey = MemoryCacheUtils.generateKey(imageUri, imageSize);
-                        Bitmap bmp = ImageLoader.getInstance().getMemoryCache().get(memoryCacheKey);
-                        if(bmp != null && !bmp.isRecycled()){
-                            smallImageView.setVisibility(View.VISIBLE);
-                            smallImageView.setImageBitmap(bmp);
-                        }
-                        loading.setVisibility(View.VISIBLE);
-                    }
 
-                    @Override
-                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                        loading.setVisibility(View.GONE);
-                        smallImageView.setVisibility(View.GONE);
-                    }
+                Glide.with(context)
+                        .load(imgurl)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存多个尺寸
+                        .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
+                        .error(R.drawable.ic_launcher)
+                        .into(new GlideDrawableImageViewTarget(imageView){
+                            @Override
+                            public void onLoadStarted(Drawable placeholder) {
+                                super.onLoadStarted(placeholder);
+                               /* if(smallImageView!=null){
+                                    smallImageView.setVisibility(View.VISIBLE);
+                                    Glide.with(context).load(imgurl).into(smallImageView);
+                                }*/
+                                loading.setVisibility(View.VISIBLE);
+                            }
 
-                    @Override
-                    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                        super.onLoadingFailed(imageUri, view, failReason);
-                    }
-                });
+                            @Override
+                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                                super.onLoadFailed(e, errorDrawable);
+                                /*if(smallImageView!=null){
+                                    smallImageView.setVisibility(View.GONE);
+                                }*/
+                                loading.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                super.onResourceReady(resource, animation);
+                                loading.setVisibility(View.GONE);
+                                /*if(smallImageView!=null){
+                                    smallImageView.setVisibility(View.GONE);
+                                }*/
+                            }
+                        });
 
                 container.addView(view, 0);
             }
@@ -207,5 +225,32 @@ public class ImagePagerActivity extends Activity{
         }
 
 
+    }
+
+    public static class ImageSize implements Serializable{
+
+        private int width;
+        private int height;
+
+        public ImageSize(int width, int height){
+            this.width = width;
+            this.height = height;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public void setHeight(int height) {
+            this.height = height;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public void setWidth(int width) {
+            this.width = width;
+        }
     }
 }
