@@ -126,7 +126,10 @@ public class MainActivity extends Activity implements ICircleView{
 			@Override
 			public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
 				super.onScrollStateChanged(recyclerView, newState);
-				Glide.with(MainActivity.this).pauseRequests();
+				if(newState != RecyclerView.SCROLL_STATE_IDLE){
+					Glide.with(MainActivity.this).pauseRequests();
+				}
+
 			}
 		});
 
