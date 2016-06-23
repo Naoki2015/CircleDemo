@@ -18,9 +18,9 @@ import java.util.Random;
  */
 public class DatasUtil {
 	public static final String[] CONTENTS = { "",
-			"哈哈，VR013  http://www.vr013.com;一个不错的VR网站。哈哈，VR013  http://www.vr013.com;一个不错的VR网站。哈哈，VR013  http://www.vr013.com;一个不错的VR网站。哈哈，VR013  http://www.vr013.com;一个不错的VR网站。",
-			"今天是个好日子，http://www.vr013.com;一个不错的VR网站",
-			"呵呵，http://www.vr013.com;一个不错的VR网站",
+			"哈哈，18123456789,VR013  http://www.vr013.com;一个不错的VR网站。哈哈，VR013  http://www.vr013.com;一个不错的VR网站。哈哈，VR013  http://www.vr013.com;一个不错的VR网站。哈哈，VR013  http://www.vr013.com;一个不错的VR网站。",
+			"今天是个好日子，http://www.vr013.com;一个不错的VR网站,18123456789,",
+			"呵呵，http://www.vr013.com;一个不错的VR网站,18123456789,",
 			"只有http|https|ftp|svn://开头的网址才能识别为网址，正则表达式写的不太好，如果你又更好的正则表达式请评论告诉我，谢谢！",
 			"VR（Virtual Reality，即虚拟现实，简称VR），是由美国VPL公司创建人拉尼尔（Jaron Lanier）在20世纪80年代初提出的。其具体内涵是：综合利用计算机图形系统和各种现实及控制等接口设备，在计算机上生成的、可交互的三维环境中提供沉浸感觉的技术。其中，计算机生成的、可交互的三维环境称为虚拟环境（即Virtual Environment，简称VE）。虚拟现实技术是一种可以创建和体验虚拟世界的计算机仿真系统的技术。它利用计算机生成一种模拟环境，利用多源信息融合的交互式三维动态视景和实体行为的系统仿真使用户沉浸到该环境中。",
 			"哈哈哈哈",
