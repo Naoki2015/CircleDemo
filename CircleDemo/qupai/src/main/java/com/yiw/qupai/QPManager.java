@@ -121,7 +121,7 @@ public class QPManager {
                 //帧率
                 .setVideoFrameRate(30)
                 //时长区间
-                .setDurationRange(2, 8)
+                .setDurationRange(Contant.DEFAULT_MIN_DURATION_LIMIT, Contant.DEFAULT_DURATION_LIMIT)
                 .get();
 
         //缩略图参数,可设置取得缩略图的数量，默认10张
@@ -144,12 +144,13 @@ public class QPManager {
 
         //初始化，建议在application里面做初始化，这里做是为了方便开发者认识参数的意义
         qupaiService.initRecord(info, projectOptions, _UISettings);
-        qupaiService.addMusic(0, "Athena", "assets://Qupai/music/Athena");
-        qupaiService.addMusic(1, "Box Clever", "assets://Qupai/music/Box Clever");
-        qupaiService.addMusic(2, "Byebye love", "assets://Qupai/music/Byebye love");
-        qupaiService.addMusic(3, "chuangfeng", "assets://Qupai/music/chuangfeng");
-        qupaiService.addMusic(4, "Early days", "assets://Qupai/music/Early days");
-        qupaiService.addMusic(5, "Faraway", "assets://Qupai/music/Faraway");
+        qupaiService.addMusic(0, "szj", "assets://Qupai/music/szj");
+        qupaiService.addMusic(1, "Athena", "assets://Qupai/music/Athena");
+        qupaiService.addMusic(2, "Box Clever", "assets://Qupai/music/Box Clever");
+        qupaiService.addMusic(3, "Byebye love", "assets://Qupai/music/Byebye love");
+        qupaiService.addMusic(4, "chuangfeng", "assets://Qupai/music/chuangfeng");
+        qupaiService.addMusic(5, "Early days", "assets://Qupai/music/Early days");
+        qupaiService.addMusic(6, "Faraway", "assets://Qupai/music/Faraway");
     }
 
 
