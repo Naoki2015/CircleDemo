@@ -1,6 +1,7 @@
 package com.yiw.circledemo.widgets;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
@@ -71,6 +72,27 @@ public class CircleVideoView extends LinearLayout implements VideoLoadMvpView, L
 
     public void setVideoUrl(String url){
         videoUrl = url;
+    }
+
+    public void setVideoImgUrl(String imgUrl){
+
+        Glide.with(getContext())
+                .load(imgUrl)
+                .placeholder(new ColorDrawable(0xffdcdcdc))
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(videoFrame);
+
+        if(videoState == STATE_IDLE){
+            videoButton.setVisibility(View.VISIBLE);
+            videoFrame.setVisibility(View.VISIBLE);
+        }else if(videoState == STATE_ACTIVED){
+            videoButton.setVisibility(View.GONE);
+            videoFrame.setVisibility(View.GONE);
+        }else{
+            videoButton.setVisibility(View.VISIBLE);
+            videoFrame.setVisibility(View.VISIBLE);
+        }
     }
 
     private void init() {

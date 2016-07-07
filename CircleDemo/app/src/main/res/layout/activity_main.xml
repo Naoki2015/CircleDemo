@@ -5,7 +5,7 @@
     android:background="@color/color_aeaeae"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context="com.yiw.circledemo.MainActivity" >
+    tools:context=".activity.MainActivity" >
 
     <include layout="@layout/layout_main_titlebar"/>
 
@@ -29,6 +29,18 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             layout="@layout/layout_editview"/>
+
+        <com.mikhaellopez.circularprogressbar.CircularProgressBar
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/video_progress"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            app:cpb_background_progressbar_color="@color/white"
+            app:cpb_background_progressbar_width="3dp"
+            app:cpb_progressbar_color="@color/colorAccent"
+            app:cpb_progressbar_width="3dp" />
 
     </RelativeLayout>
 

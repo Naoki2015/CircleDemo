@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
 
+import com.yiw.qupai.QPManager;
+
 import java.io.File;
 /**
  * 
@@ -23,6 +25,9 @@ public class MyApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		mContext = getApplicationContext();
+
+        QPManager.getInstance(getApplicationContext()).initRecord();
+
 	}
 
 	public static Context getContext(){

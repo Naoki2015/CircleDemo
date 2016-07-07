@@ -27,6 +27,7 @@ public class CircleItem extends BaseBean{
 	private List<CommentItem> comments;
 	private User user;
 	private String videoUrl;
+	private String videoImgUrl;
 	
 	public String getId() {
 		return id;
@@ -95,6 +96,14 @@ public class CircleItem extends BaseBean{
 
 	public void setVideoUrl(String videoUrl) {
 		this.videoUrl = videoUrl;
+	}
+
+	public String getVideoImgUrl() {
+		return videoImgUrl;
+	}
+
+	public void setVideoImgUrl(String videoImgUrl) {
+		this.videoImgUrl = videoImgUrl;
 	}
 
 	public boolean hasFavort(){

@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.yiw.circledemo.ImagePagerActivity;
+import com.yiw.circledemo.activity.ImagePagerActivity;
 import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
 import com.yiw.circledemo.bean.ActionItem;
@@ -29,7 +29,6 @@ import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.utils.GlideCircleTransform;
 import com.yiw.circledemo.utils.UrlUtils;
 import com.yiw.circledemo.widgets.CircleVideoView;
-import com.yiw.circledemo.widgets.CircularImage;
 import com.yiw.circledemo.widgets.CommentListView;
 import com.yiw.circledemo.widgets.FavortListView;
 import com.yiw.circledemo.widgets.MagicTextView;
@@ -254,6 +253,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                     break;
                 case TYPE_VIDEO:
                     holder.videoView.setVideoUrl(circleItem.getVideoUrl());
+                    holder.videoView.setVideoImgUrl(circleItem.getVideoImgUrl());//视频封面图片
                     holder.videoView.setPostion(position);
                     holder.videoView.setOnPlayClickListener(new CircleVideoView.OnPlayClickListener() {
                         @Override

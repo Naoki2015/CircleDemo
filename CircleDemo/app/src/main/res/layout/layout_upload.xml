@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/color_aeaeae"
+    android:orientation="vertical"
+    android:minWidth="130dp"
+    android:padding="16dip" >
+
+    <com.mikhaellopez.circularprogressbar.CircularProgressBar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/video_progress"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:visibility="visible"
+        app:cpb_background_progressbar_color="@color/white"
+        app:cpb_background_progressbar_width="3dp"
+        app:cpb_progressbar_color="@color/colorAccent"
+        app:cpb_progressbar_width="3dp" />
+
+    <TextView
+        android:id="@+id/dialog_loading_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_gravity="center_horizontal"
+        android:text="正在上传，请稍等..."
+        android:textColor="@android:color/white" />
+
+</LinearLayout>
