@@ -109,8 +109,8 @@ public class DatasUtil {
 				item.setPhotos(createPhotos());
 			}else {
 				item.setType("3");// 图片
-				String videoUrl = "http://yiwcicledemo.s.qupai.me/v/f7fb040b-ca5a-4393-b080-bdeee8aed181.mp4";
-                String videoImgUrl = "http://yiwcicledemo.s.qupai.me/v/f7fb040b-ca5a-4393-b080-bdeee8aed181.jpg";
+				String videoUrl = "http://yiwcicledemo.s.qupai.me/v/80c81c19-7c02-4dee-baca-c97d9bbd6607.mp4";
+                String videoImgUrl = "http://yiwcicledemo.s.qupai.me/v/80c81c19-7c02-4dee-baca-c97d9bbd6607.jpg";
 				item.setVideoUrl(videoUrl);
                 item.setVideoImgUrl(videoImgUrl);
 			}
