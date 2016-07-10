@@ -1,4 +1,4 @@
-package com.yiw.circledemo.adapter;
+package com.yiw.circledemo.listener;
 
 /**
  * Created by yiwei on 16/4/9.

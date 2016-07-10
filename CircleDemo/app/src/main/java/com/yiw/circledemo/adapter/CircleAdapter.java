@@ -15,23 +15,22 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.yiw.circledemo.activity.ImagePagerActivity;
 import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
+import com.yiw.circledemo.activity.ImagePagerActivity;
 import com.yiw.circledemo.bean.ActionItem;
 import com.yiw.circledemo.bean.CircleItem;
 import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
-import com.yiw.circledemo.spannable.ISpanClick;
 import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.utils.GlideCircleTransform;
 import com.yiw.circledemo.utils.UrlUtils;
-import com.yiw.circledemo.widgets.CircleVideoView;
 import com.yiw.circledemo.widgets.CommentListView;
-import com.yiw.circledemo.widgets.FavortListView;
-import com.yiw.circledemo.widgets.MagicTextView;
+import com.yiw.circledemo.widgets.ExpandTextView;
+import com.yiw.circledemo.widgets.PraiseListView;
+import com.yiw.circledemo.widgets.CircleVideoView;
 import com.yiw.circledemo.widgets.MultiImageView;
 import com.yiw.circledemo.widgets.SnsPopupWindow;
 import com.yiw.circledemo.widgets.dialog.CommentDialog;
@@ -146,7 +145,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             });
             if(hasFavort || hasComment){
                 if(hasFavort){//处理点赞列表
-                    holder.favortListTv.setSpanClickListener(new ISpanClick() {
+                    holder.praiseListView.setOnItemClickListener(new PraiseListView.OnItemClickListener() {
                         @Override
                         public void onClick(int position) {
                             String userName = favortDatas.get(position).getUser().getName();
@@ -154,15 +153,14 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                             Toast.makeText(MyApplication.getContext(), userName + " &id = " + userId, Toast.LENGTH_SHORT).show();
                         }
                     });
-                    holder.favortListAdapter.setDatas(favortDatas);
-                    holder.favortListAdapter.notifyDataSetChanged();
-                    holder.favortListTv.setVisibility(View.VISIBLE);
+                    holder.praiseListView.setDatas(favortDatas);
+                    holder.praiseListView.setVisibility(View.VISIBLE);
                 }else{
-                    holder.favortListTv.setVisibility(View.GONE);
+                    holder.praiseListView.setVisibility(View.GONE);
                 }
 
                 if(hasComment){//处理评论列表
-                    holder.commentList.setOnItemClick(new CommentListView.OnItemClickListener() {
+                    holder.commentList.setOnItemClickListener(new CommentListView.OnItemClickListener() {
                         @Override
                         public void onItemClick(int commentPosition) {
                             CommentItem commentItem = commentsDatas.get(commentPosition);
@@ -182,7 +180,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                             }
                         }
                     });
-                    holder.commentList.setOnItemLongClick(new CommentListView.OnItemLongClickListener() {
+                    holder.commentList.setOnItemLongClickListener(new CommentListView.OnItemLongClickListener() {
                         @Override
                         public void onItemLongClick(int commentPosition) {
                             //长按进行复制或者删除
@@ -191,12 +189,10 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                             dialog.show();
                         }
                     });
-                    holder.commentAdapter.setDatas(commentsDatas);
-                    holder.commentAdapter.notifyDataSetChanged();
+                    holder.commentList.setDatas(commentsDatas);
                     holder.commentList.setVisibility(View.VISIBLE);
 
                 }else {
-
                     holder.commentList.setVisibility(View.GONE);
                 }
                 holder.digCommentBody.setVisibility(View.VISIBLE);
@@ -287,12 +283,12 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
         public TextView nameTv;
         public TextView urlTipTv;
         /** 动态的内容 */
-        public MagicTextView contentTv;
+        public ExpandTextView contentTv;
         public TextView timeTv;
         public TextView deleteBtn;
         public ImageView snsBtn;
         /** 点赞列表*/
-        public FavortListView favortListTv;
+        public PraiseListView praiseListView;
 
         public LinearLayout urlBody;
         public LinearLayout digCommentBody;
@@ -309,8 +305,6 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
 
         public CircleVideoView videoView;
         // ===========================
-        public FavortListAdapter favortListAdapter;
-        public CommentAdapter commentAdapter;
         public SnsPopupWindow snsPopupWindow;
 
         public CircleViewHolder(View itemView, int viewType) {
@@ -353,21 +347,15 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             nameTv = (TextView) itemView.findViewById(R.id.nameTv);
             digLine = itemView.findViewById(R.id.lin_dig);
 
-            contentTv = (MagicTextView) itemView.findViewById(R.id.contentTv);
+            contentTv = (ExpandTextView) itemView.findViewById(R.id.contentTv);
             urlTipTv = (TextView) itemView.findViewById(R.id.urlTipTv);
             timeTv = (TextView) itemView.findViewById(R.id.timeTv);
             deleteBtn = (TextView) itemView.findViewById(R.id.deleteBtn);
             snsBtn = (ImageView) itemView.findViewById(R.id.snsBtn);
-            favortListTv = (FavortListView) itemView.findViewById(R.id.favortListTv);
+            praiseListView = (PraiseListView) itemView.findViewById(R.id.praiseListView);
 
             digCommentBody = (LinearLayout) itemView.findViewById(R.id.digCommentBody);
-
             commentList = (CommentListView)itemView.findViewById(R.id.commentList);
-            commentAdapter = new CommentAdapter(itemView.getContext());
-            favortListAdapter = new FavortListAdapter();
-
-            favortListTv.setAdapter(favortListAdapter);
-            commentList.setAdapter(commentAdapter);
 
             snsPopupWindow = new SnsPopupWindow(itemView.getContext());
 

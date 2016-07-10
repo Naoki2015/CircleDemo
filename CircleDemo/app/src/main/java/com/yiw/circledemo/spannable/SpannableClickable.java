@@ -15,23 +15,24 @@ import com.yiw.circledemo.R;
 public abstract class SpannableClickable extends ClickableSpan implements View.OnClickListener {
 
     private int DEFAULT_COLOR_ID = R.color.color_8290AF;
-    private int textColorId = DEFAULT_COLOR_ID;
+    /**
+     * text颜色
+     */
+    private int textColor ;
 
     public SpannableClickable() {
-
+        this.textColor = MyApplication.getContext().getResources().getColor(DEFAULT_COLOR_ID);
     }
 
-    public SpannableClickable(int textColorId){
-        this.textColorId = textColorId;
+    public SpannableClickable(int textColor){
+        this.textColor = textColor;
     }
 
     @Override
     public void updateDrawState(TextPaint ds) {
         super.updateDrawState(ds);
 
-        int colorValue = MyApplication.getContext().getResources().getColor(
-                textColorId);
-        ds.setColor(colorValue);
+        ds.setColor(textColor);
         ds.setUnderlineText(false);
         ds.clearShadowLayer();
     }

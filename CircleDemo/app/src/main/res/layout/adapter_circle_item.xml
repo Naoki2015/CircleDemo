@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
@@ -48,27 +49,20 @@
                     android:textColor="@color/color_aeaeae"
                     android:textSize="14sp" />
             </LinearLayout>
-            <!--<TextView-->
-                <!--android:id="@+id/contentTv"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:paddingBottom="5dip"-->
-                <!--android:paddingTop="5dip"-->
-                <!--android:textColor="@color/color_232323"-->
-                <!--android:textSize="14sp" />-->
 
-            <com.yiw.circledemo.widgets.MagicTextView
+            <com.yiw.circledemo.widgets.ExpandTextView
                 android:id="@+id/contentTv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="5dip"
-                android:paddingTop="5dip" />
+                android:layout_marginTop="5dip"
+                app:showLines="4"/>
 
             <!-- 不同的地方 -->
 			<ViewStub 
 			    android:id="@+id/viewStub"
 			    android:layout_width="match_parent"
 			    android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
 			    />
             <!-- 地址、时间 、删除 、点赞、 评论 -->
             <LinearLayout
@@ -122,14 +116,15 @@
                 android:background="@drawable/im_distribute_comm_bg"
                 android:orientation="vertical" >
 
-                <com.yiw.circledemo.widgets.FavortListView
-                    android:id="@+id/favortListTv"
+                <com.yiw.circledemo.widgets.PraiseListView
+                    android:id="@+id/praiseListView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:lineSpacingMultiplier="1.1"
                     android:textSize="14sp"
-                    android:textColor="@color/color_8290AF"
+                    android:textColor="@color/praise_item"
+                    app:item_color="@color/praise_item"
                     />
 
                 <View 
@@ -145,6 +140,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:orientation="vertical"
+                    app:item_color="@color/praise_item"
                     />
 
             </LinearLayout>

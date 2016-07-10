@@ -131,6 +131,7 @@ public class CircleVideoView extends LinearLayout implements VideoLoadMvpView, L
                         .as(File.class)
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(progressTarget);
+
                 videoButton.setVisibility(View.INVISIBLE);
                 if(onPlayClickListener!=null){
                     onPlayClickListener.onPlayClick(postion);
