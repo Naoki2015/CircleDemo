@@ -60,9 +60,9 @@ public class ExpandTextView extends LinearLayout {
     }
 
     private void initAttrs(AttributeSet attrs) {
-        TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ExpandableListView, 0, 0);
+        TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ExpandTextView, 0, 0);
         try {
-            showLines = typedArray.getInteger(R.styleable.ExpandTextView_showLines, DEFAULT_MAX_LINES);
+            showLines = typedArray.getInt(R.styleable.ExpandTextView_showLines, DEFAULT_MAX_LINES);
         }finally {
             typedArray.recycle();
         }
