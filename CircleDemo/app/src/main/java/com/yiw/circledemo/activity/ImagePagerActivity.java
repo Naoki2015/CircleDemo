@@ -51,6 +51,7 @@ public class ImagePagerActivity extends Activity{
         intent.putExtra(INTENT_POSITION, position);
         intent.putExtra(INTENT_IMAGESIZE, imageSize);
         context.startActivity(intent);
+
     }
 
     @Override
@@ -88,6 +89,7 @@ public class ImagePagerActivity extends Activity{
         viewPager.setCurrentItem(startPos);
 
         addGuideView(guideGroup, startPos, imgUrls);
+
     }
 
     private void getIntentData() {
@@ -226,6 +228,12 @@ public class ImagePagerActivity extends Activity{
         }
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        guideViewList.clear();
+        super.onDestroy();
     }
 
     public static class ImageSize implements Serializable{

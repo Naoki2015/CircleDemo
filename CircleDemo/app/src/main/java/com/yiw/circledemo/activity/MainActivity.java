@@ -32,8 +32,8 @@ import com.yiw.circledemo.bean.CircleItem;
 import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
+import com.yiw.circledemo.mvp.contract.CircleContract;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
-import com.yiw.circledemo.mvp.view.ICircleView;
 import com.yiw.circledemo.utils.CommonUtils;
 import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.widgets.CommentListView;
@@ -53,22 +53,22 @@ import java.util.List;
 * @date 2015-12-28 下午4:21:18 
 *
  */
-public class MainActivity extends Activity implements ICircleView{
+public class MainActivity extends Activity implements CircleContract.View{
 
 	protected static final String TAG = MainActivity.class.getSimpleName();
-	private CircleAdapter mAdapter;
-	private LinearLayout mEditTextBody;
-	private EditText mEditText;
+	private CircleAdapter circleAdapter;
+	private LinearLayout edittextbody;
+	private EditText editText;
 	private ImageView sendIv;
 
-	private int mScreenHeight;
-	private int mEditTextBodyHeight;
-	private int mCurrentKeyboardH;
-	private int mSelectCircleItemH;
-	private int mSelectCommentItemOffset;
+	private int screenHeight;
+	private int editTextBodyHeight;
+	private int currentKeyboardH;
+	private int selectCircleItemH;
+	private int selectCommentItemOffset;
 
-	private CirclePresenter mPresenter;
-	private CommentConfig mCommentConfig;
+	private CirclePresenter presenter;
+	private CommentConfig commentConfig;
 	private SuperRecyclerView recyclerView;
 	private RelativeLayout bodyLayout;
 	private LinearLayoutManager layoutManager;
@@ -83,13 +83,21 @@ public class MainActivity extends Activity implements ICircleView{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mPresenter = new CirclePresenter();
-        mPresenter.attachView(this);
+		presenter = new CirclePresenter(this);
 		initView();
-        mPresenter.loadData(TYPE_PULLREFRESH);
+
+        presenter.loadData(TYPE_PULLREFRESH);
 	}
 
-	@SuppressLint({ "ClickableViewAccessibility", "InlinedApi" })
+    @Override
+    protected void onDestroy() {
+        if(presenter !=null){
+            presenter.recycle();
+        }
+        super.onDestroy();
+    }
+
+    @SuppressLint({ "ClickableViewAccessibility", "InlinedApi" })
 	private void initView() {
 
         initTitle();
@@ -104,7 +112,7 @@ public class MainActivity extends Activity implements ICircleView{
 		recyclerView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if (mEditTextBody.getVisibility() == View.VISIBLE) {
+				if (edittextbody.getVisibility() == View.VISIBLE) {
 					updateEditTextBodyVisible(View.GONE, null);
 					return true;
 				}
@@ -118,7 +126,7 @@ public class MainActivity extends Activity implements ICircleView{
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mPresenter.loadData(TYPE_PULLREFRESH);
+                        presenter.loadData(TYPE_PULLREFRESH);
                         recyclerView.setRefreshing(false);
                     }
                 }, 2000);
@@ -143,24 +151,24 @@ public class MainActivity extends Activity implements ICircleView{
 		});
 
 
-		mAdapter = new CircleAdapter(this);
-		mAdapter.setCirclePresenter(mPresenter);
-        recyclerView.setAdapter(mAdapter);
+		circleAdapter = new CircleAdapter(this);
+		circleAdapter.setCirclePresenter(presenter);
+        recyclerView.setAdapter(circleAdapter);
 		
-		mEditTextBody = (LinearLayout) findViewById(R.id.editTextBodyLl);
-		mEditText = (EditText) findViewById(R.id.circleEt);
+		edittextbody = (LinearLayout) findViewById(R.id.editTextBodyLl);
+		 editText = (EditText) findViewById(R.id.circleEt);
 		sendIv = (ImageView) findViewById(R.id.sendIv);
 		sendIv.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (mPresenter != null) {
+				if (presenter != null) {
 					//发布评论
-					String content = mEditText.getText().toString().trim();
+					String content =  editText.getText().toString().trim();
 					if(TextUtils.isEmpty(content)){
 						Toast.makeText(MainActivity.this, "评论内容不能为空...", Toast.LENGTH_SHORT).show();
 						return;
 					}
-					mPresenter.addComment(content, mCommentConfig);
+					presenter.addComment(content, commentConfig);
 				}
 				updateEditTextBodyVisible(View.GONE, null);
 			}
@@ -210,17 +218,17 @@ public class MainActivity extends Activity implements ICircleView{
                 int keyboardH = screenH - (r.bottom - r.top);
 				Log.d(TAG, "screenH＝ "+ screenH +" &keyboardH = " + keyboardH + " &r.bottom=" + r.bottom + " &top=" + r.top + " &statusBarH=" + statusBarH);
 
-                if(keyboardH == mCurrentKeyboardH){//有变化时才处理，否则会陷入死循环
+                if(keyboardH == currentKeyboardH){//有变化时才处理，否则会陷入死循环
                 	return;
                 }
 
-				mCurrentKeyboardH = keyboardH;
-            	mScreenHeight = screenH;//应用屏幕的高度
-            	mEditTextBodyHeight = mEditTextBody.getHeight();
+				currentKeyboardH = keyboardH;
+            	screenHeight = screenH;//应用屏幕的高度
+            	editTextBodyHeight = edittextbody.getHeight();
 
 				//偏移listview
-				if(layoutManager!=null && mCommentConfig != null){
-					layoutManager.scrollToPositionWithOffset(mCommentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE, getListviewOffset(mCommentConfig));
+				if(layoutManager!=null && commentConfig != null){
+					layoutManager.scrollToPositionWithOffset(commentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE, getListviewOffset(commentConfig));
 				}
             }
         });
@@ -243,8 +251,8 @@ public class MainActivity extends Activity implements ICircleView{
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-           if(mEditTextBody != null && mEditTextBody.getVisibility() == View.VISIBLE){
-        	   mEditTextBody.setVisibility(View.GONE);
+           if(edittextbody != null && edittextbody.getVisibility() == View.VISIBLE){
+        	   edittextbody.setVisibility(View.GONE);
         	   return true;
            }
         }
@@ -253,11 +261,11 @@ public class MainActivity extends Activity implements ICircleView{
 
 	@Override
 	public void update2DeleteCircle(String circleId) {
-		List<CircleItem> circleItems = mAdapter.getDatas();
+		List<CircleItem> circleItems = circleAdapter.getDatas();
 		for(int i=0; i<circleItems.size(); i++){
 			if(circleId.equals(circleItems.get(i).getId())){
 				circleItems.remove(i);
-				mAdapter.notifyDataSetChanged();
+				circleAdapter.notifyDataSetChanged();
 				return;
 			}
 		}
@@ -266,20 +274,20 @@ public class MainActivity extends Activity implements ICircleView{
 	@Override
 	public void update2AddFavorite(int circlePosition, FavortItem addItem) {
 		if(addItem != null){
-            CircleItem item = (CircleItem) mAdapter.getDatas().get(circlePosition);
+            CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
             item.getFavorters().add(addItem);
-			mAdapter.notifyDataSetChanged();
+			circleAdapter.notifyDataSetChanged();
 		}
 	}
 
 	@Override
 	public void update2DeleteFavort(int circlePosition, String favortId) {
-        CircleItem item = (CircleItem) mAdapter.getDatas().get(circlePosition);
+        CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
 		List<FavortItem> items = item.getFavorters();
 		for(int i=0; i<items.size(); i++){
 			if(favortId.equals(items.get(i).getId())){
 				items.remove(i);
-				mAdapter.notifyDataSetChanged();
+				circleAdapter.notifyDataSetChanged();
 				return;
 			}
 		}
@@ -288,22 +296,22 @@ public class MainActivity extends Activity implements ICircleView{
 	@Override
 	public void update2AddComment(int circlePosition, CommentItem addItem) {
 		if(addItem != null){
-            CircleItem item = (CircleItem) mAdapter.getDatas().get(circlePosition);
+            CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
             item.getComments().add(addItem);
-			mAdapter.notifyDataSetChanged();
+			circleAdapter.notifyDataSetChanged();
 		}
 		//清空评论文本
-		mEditText.setText("");
+		 editText.setText("");
 	}
 
 	@Override
 	public void update2DeleteComment(int circlePosition, String commentId) {
-        CircleItem item = (CircleItem) mAdapter.getDatas().get(circlePosition);
+        CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
 		List<CommentItem> items = item.getComments();
 		for(int i=0; i<items.size(); i++){
 			if(commentId.equals(items.get(i).getId())){
 				items.remove(i);
-				mAdapter.notifyDataSetChanged();
+				circleAdapter.notifyDataSetChanged();
 				return;
 			}
 		}
@@ -311,32 +319,32 @@ public class MainActivity extends Activity implements ICircleView{
 
 	@Override
 	public void updateEditTextBodyVisible(int visibility, CommentConfig commentConfig) {
-		mCommentConfig = commentConfig;
-		mEditTextBody.setVisibility(visibility);
+		this.commentConfig = commentConfig;
+		edittextbody.setVisibility(visibility);
 
 		measureCircleItemHighAndCommentItemOffset(commentConfig);
 
 		if(View.VISIBLE==visibility){
-			mEditText.requestFocus();
+			 editText.requestFocus();
 			//弹出键盘
-			CommonUtils.showSoftInput(mEditText.getContext(), mEditText);
+			CommonUtils.showSoftInput( editText.getContext(),  editText);
 
 		}else if(View.GONE==visibility){
 			//隐藏键盘
-			CommonUtils.hideSoftInput(mEditText.getContext(), mEditText);
+			CommonUtils.hideSoftInput( editText.getContext(),  editText);
 		}
 	}
 
     @Override
     public void update2loadData(int loadType, List<CircleItem> datas) {
         if (loadType == TYPE_PULLREFRESH){
-            mAdapter.setDatas(datas);
+            circleAdapter.setDatas(datas);
         }else if(loadType == TYPE_UPLOADREFRESH){
-            mAdapter.getDatas().addAll(datas);
+            circleAdapter.getDatas().addAll(datas);
         }
-        mAdapter.notifyDataSetChanged();
+        circleAdapter.notifyDataSetChanged();
 
-        if(mAdapter.getDatas().size()<45 + CircleAdapter.HEADVIEW_SIZE){
+        if(circleAdapter.getDatas().size()<45 + CircleAdapter.HEADVIEW_SIZE){
             recyclerView.setupMoreListener(new OnMoreListener() {
                 @Override
                 public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {
@@ -344,7 +352,7 @@ public class MainActivity extends Activity implements ICircleView{
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mPresenter.loadData(TYPE_UPLOADREFRESH);
+                            presenter.loadData(TYPE_UPLOADREFRESH);
                         }
                     }, 2000);
 
@@ -367,10 +375,10 @@ public class MainActivity extends Activity implements ICircleView{
 			return 0;
 		//这里如果你的listview上面还有其它占高度的控件，则需要减去该控件高度，listview的headview除外。
 		//int listviewOffset = mScreenHeight - mSelectCircleItemH - mCurrentKeyboardH - mEditTextBodyHeight;
-        int listviewOffset = mScreenHeight - mSelectCircleItemH - mCurrentKeyboardH - mEditTextBodyHeight - titleBar.getHeight();
+        int listviewOffset = screenHeight - selectCircleItemH - currentKeyboardH - editTextBodyHeight - titleBar.getHeight();
 		if(commentConfig.commentType == CommentConfig.Type.REPLY){
 			//回复评论的情况
-			listviewOffset = listviewOffset + mSelectCommentItemOffset;
+			listviewOffset = listviewOffset + selectCommentItemOffset;
 		}
         Log.i(TAG, "listviewOffset : " + listviewOffset);
 		return listviewOffset;
@@ -385,7 +393,7 @@ public class MainActivity extends Activity implements ICircleView{
         View selectCircleItem = layoutManager.getChildAt(commentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE - firstPosition);
 
 		if(selectCircleItem != null){
-			mSelectCircleItemH = selectCircleItem.getHeight();
+			selectCircleItemH = selectCircleItem.getHeight();
 		}
 
 		if(commentConfig.commentType == CommentConfig.Type.REPLY){
@@ -396,13 +404,13 @@ public class MainActivity extends Activity implements ICircleView{
 				View selectCommentItem = commentLv.getChildAt(commentConfig.commentPosition);
 				if(selectCommentItem != null){
 					//选择的commentItem距选择的CircleItem底部的距离
-					mSelectCommentItemOffset = 0;
+					selectCommentItemOffset = 0;
 					View parentView = selectCommentItem;
 					do {
 						int subItemBottom = parentView.getBottom();
 						parentView = (View) parentView.getParent();
 						if(parentView != null){
-							mSelectCommentItemOffset += (parentView.getHeight() - subItemBottom);
+							selectCommentItemOffset += (parentView.getHeight() - subItemBottom);
 						}
 					} while (parentView != null && parentView != selectCircleItem);
 				}
@@ -437,8 +445,8 @@ public class MainActivity extends Activity implements ICircleView{
                     Toast.makeText(MainActivity.this, "上传成功...", Toast.LENGTH_LONG).show();
 
                     //将新拍摄的video刷新到列表中
-                    mAdapter.getDatas().add(0, DatasUtil.createVideoItem(videoFile, thum[0]));
-                    mAdapter.notifyDataSetChanged();
+                    circleAdapter.getDatas().add(0, DatasUtil.createVideoItem(videoFile, thum[0]));
+                    circleAdapter.notifyDataSetChanged();
                 }
 
                 @Override

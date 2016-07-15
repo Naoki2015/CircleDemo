@@ -1,4 +1,4 @@
-package com.yiw.circledemo.mvp.view;
+package com.yiw.circledemo.mvp.contract;
 
 /**
  * Created by yiwei on 16/4/1.

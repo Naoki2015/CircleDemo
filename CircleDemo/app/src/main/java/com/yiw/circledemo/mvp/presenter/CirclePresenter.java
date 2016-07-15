@@ -6,9 +6,9 @@ import com.yiw.circledemo.bean.CircleItem;
 import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
+import com.yiw.circledemo.mvp.contract.CircleContract;
 import com.yiw.circledemo.mvp.modle.CircleModel;
-import com.yiw.circledemo.mvp.modle.IDataRequestListener;
-import com.yiw.circledemo.mvp.view.ICircleView;
+import com.yiw.circledemo.listener.IDataRequestListener;
 import com.yiw.circledemo.utils.DatasUtil;
 
 import java.util.List;
@@ -21,17 +21,19 @@ import java.util.List;
 * @date 2015-12-28 下午4:06:03 
 *
  */
-public class CirclePresenter extends BasePresenter<ICircleView>{
+public class CirclePresenter implements CircleContract.Presenter{
 	private CircleModel mCircleModel;
+	private CircleContract.View view;
 
-	public CirclePresenter(){
+	public CirclePresenter(CircleContract.View view){
 		mCircleModel = new CircleModel();
+		this.view = view;
 	}
 
 	public void loadData(int loadType){
 
         List<CircleItem> datas = DatasUtil.createCircleDatas();
-        getView().update2loadData(loadType, datas);
+        view.update2loadData(loadType, datas);
 	}
 
 
@@ -48,7 +50,7 @@ public class CirclePresenter extends BasePresenter<ICircleView>{
 
 			@Override
 			public void loadSuccess(Object object) {
-				getView().update2DeleteCircle(circleId);
+				view.update2DeleteCircle(circleId);
 			}
 		});
 	}
@@ -66,7 +68,7 @@ public class CirclePresenter extends BasePresenter<ICircleView>{
 			@Override
 			public void loadSuccess(Object object) {
 				FavortItem item = DatasUtil.createCurUserFavortItem();
-				getView().update2AddFavorite(circlePosition, item);
+				view.update2AddFavorite(circlePosition, item);
 			}
 		});
 	}
@@ -84,7 +86,7 @@ public class CirclePresenter extends BasePresenter<ICircleView>{
 
 			@Override
 			public void loadSuccess(Object object) {
-				getView().update2DeleteFavort(circlePosition, favortId);
+				view.update2DeleteFavort(circlePosition, favortId);
 			}
 		});
 	}
@@ -113,7 +115,7 @@ public class CirclePresenter extends BasePresenter<ICircleView>{
 					newItem = DatasUtil.createReplyComment(config.replyUser, content);
 				}
 
-				getView().update2AddComment(config.circlePosition, newItem);
+				view.update2AddComment(config.circlePosition, newItem);
 			}
 
 		});
@@ -133,7 +135,7 @@ public class CirclePresenter extends BasePresenter<ICircleView>{
 
 			@Override
 			public void loadSuccess(Object object) {
-				getView().update2DeleteComment(circlePosition, commentId);
+				view.update2DeleteComment(circlePosition, commentId);
 			}
 			
 		});
@@ -144,7 +146,14 @@ public class CirclePresenter extends BasePresenter<ICircleView>{
 	 * @param commentConfig
 	 */
 	public void showEditTextBody(CommentConfig commentConfig){
-		getView().updateEditTextBodyVisible(View.VISIBLE, commentConfig);
+		view.updateEditTextBodyVisible(View.VISIBLE, commentConfig);
 	}
 
+
+    /**
+     * 清除对外部对象的引用，反正内存泄露。
+     */
+    public void recycle(){
+        this.view = null;
+    }
 }

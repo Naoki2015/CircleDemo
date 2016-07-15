@@ -2,6 +2,8 @@ package com.yiw.circledemo.mvp.modle;
 
 import android.os.AsyncTask;
 
+import com.yiw.circledemo.listener.IDataRequestListener;
+
 /**
  * 
 * @ClassName: CircleModel 

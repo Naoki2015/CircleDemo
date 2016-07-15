@@ -7,6 +7,7 @@ android {
         applicationId "com.yiw.circledemo"
         minSdkVersion 14
         targetSdkVersion 22
+        multiDexEnabled true
     }
 
     signingConfigs{
@@ -52,7 +53,9 @@ dependencies {
         exclude group: 'glide-parent'
     }
 
+    //compile project(':httplib')
     compile project(':qupai')
 
+    //debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
 
 }

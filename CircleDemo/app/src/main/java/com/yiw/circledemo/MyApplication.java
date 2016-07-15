@@ -25,13 +25,15 @@ public class MyApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		mContext = getApplicationContext();
-
+		//LeakCanary.install(this);
         QPManager.getInstance(getApplicationContext()).initRecord();
+
 
 	}
 
 	public static Context getContext(){
 		return mContext;
 	}
-	
+
+
 }
