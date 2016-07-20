@@ -226,6 +226,10 @@ public class MainActivity extends Activity implements CircleContract.View{
             	screenHeight = screenH;//应用屏幕的高度
             	editTextBodyHeight = edittextbody.getHeight();
 
+                if(keyboardH<150){//说明是隐藏键盘的情况
+                    updateEditTextBodyVisible(View.GONE, null);
+                    return;
+                }
 				//偏移listview
 				if(layoutManager!=null && commentConfig != null){
 					layoutManager.scrollToPositionWithOffset(commentConfig.circlePosition + CircleAdapter.HEADVIEW_SIZE, getListviewOffset(commentConfig));
@@ -252,7 +256,8 @@ public class MainActivity extends Activity implements CircleContract.View{
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
            if(edittextbody != null && edittextbody.getVisibility() == View.VISIBLE){
-        	   edittextbody.setVisibility(View.GONE);
+        	   //edittextbody.setVisibility(View.GONE);
+			   updateEditTextBodyVisible(View.GONE, null);
         	   return true;
            }
         }
@@ -360,6 +365,7 @@ public class MainActivity extends Activity implements CircleContract.View{
             }, 1);
         }else{
             recyclerView.removeMoreListener();
+			recyclerView.getMoreProgressView().setVisibility(View.GONE);
         }
 
     }
