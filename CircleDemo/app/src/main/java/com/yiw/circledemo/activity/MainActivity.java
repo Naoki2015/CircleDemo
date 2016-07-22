@@ -271,6 +271,7 @@ public class MainActivity extends Activity implements CircleContract.View{
 			if(circleId.equals(circleItems.get(i).getId())){
 				circleItems.remove(i);
 				circleAdapter.notifyDataSetChanged();
+				//circleAdapter.notifyItemRemoved(i+1);
 				return;
 			}
 		}
@@ -282,6 +283,7 @@ public class MainActivity extends Activity implements CircleContract.View{
             CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
             item.getFavorters().add(addItem);
 			circleAdapter.notifyDataSetChanged();
+            //circleAdapter.notifyItemChanged(circlePosition+1);
 		}
 	}
 
@@ -293,6 +295,7 @@ public class MainActivity extends Activity implements CircleContract.View{
 			if(favortId.equals(items.get(i).getId())){
 				items.remove(i);
 				circleAdapter.notifyDataSetChanged();
+                //circleAdapter.notifyItemChanged(circlePosition+1);
 				return;
 			}
 		}
@@ -304,6 +307,7 @@ public class MainActivity extends Activity implements CircleContract.View{
             CircleItem item = (CircleItem) circleAdapter.getDatas().get(circlePosition);
             item.getComments().add(addItem);
 			circleAdapter.notifyDataSetChanged();
+            //circleAdapter.notifyItemChanged(circlePosition+1);
 		}
 		//清空评论文本
 		 editText.setText("");
@@ -317,6 +321,7 @@ public class MainActivity extends Activity implements CircleContract.View{
 			if(commentId.equals(items.get(i).getId())){
 				items.remove(i);
 				circleAdapter.notifyDataSetChanged();
+                //circleAdapter.notifyItemChanged(circlePosition+1);
 				return;
 			}
 		}
@@ -365,7 +370,7 @@ public class MainActivity extends Activity implements CircleContract.View{
             }, 1);
         }else{
             recyclerView.removeMoreListener();
-			recyclerView.getMoreProgressView().setVisibility(View.GONE);
+            recyclerView.hideMoreProgress();
         }
 
     }

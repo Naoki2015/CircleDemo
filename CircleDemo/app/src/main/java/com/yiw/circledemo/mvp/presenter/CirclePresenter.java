@@ -22,18 +22,20 @@ import java.util.List;
 *
  */
 public class CirclePresenter implements CircleContract.Presenter{
-	private CircleModel mCircleModel;
+	private CircleModel circleModel;
 	private CircleContract.View view;
 
 	public CirclePresenter(CircleContract.View view){
-		mCircleModel = new CircleModel();
+		circleModel = new CircleModel();
 		this.view = view;
 	}
 
 	public void loadData(int loadType){
 
         List<CircleItem> datas = DatasUtil.createCircleDatas();
-        view.update2loadData(loadType, datas);
+        if(view!=null){
+            view.update2loadData(loadType, datas);
+        }
 	}
 
 
@@ -46,11 +48,13 @@ public class CirclePresenter implements CircleContract.Presenter{
 	* @throws
 	 */
 	public void deleteCircle(final String circleId){
-		mCircleModel.deleteCircle(new IDataRequestListener() {
+		circleModel.deleteCircle(new IDataRequestListener() {
 
 			@Override
 			public void loadSuccess(Object object) {
-				view.update2DeleteCircle(circleId);
+                if(view!=null){
+                    view.update2DeleteCircle(circleId);
+                }
 			}
 		});
 	}
@@ -63,12 +67,15 @@ public class CirclePresenter implements CircleContract.Presenter{
 	* @throws
 	 */
 	public void addFavort(final int circlePosition){
-		mCircleModel.addFavort(new IDataRequestListener() {
+		circleModel.addFavort(new IDataRequestListener() {
 
 			@Override
 			public void loadSuccess(Object object) {
 				FavortItem item = DatasUtil.createCurUserFavortItem();
-				view.update2AddFavorite(circlePosition, item);
+                if(view !=null ){
+                    view.update2AddFavorite(circlePosition, item);
+                }
+
 			}
 		});
 	}
@@ -82,11 +89,13 @@ public class CirclePresenter implements CircleContract.Presenter{
 	* @throws
 	 */
 	public void deleteFavort(final int circlePosition, final String favortId){
-		mCircleModel.deleteFavort(new IDataRequestListener() {
+		circleModel.deleteFavort(new IDataRequestListener() {
 
 			@Override
 			public void loadSuccess(Object object) {
-				view.update2DeleteFavort(circlePosition, favortId);
+                if(view !=null ){
+                    view.update2DeleteFavort(circlePosition, favortId);
+                }
 			}
 		});
 	}
@@ -104,7 +113,7 @@ public class CirclePresenter implements CircleContract.Presenter{
 		if(config == null){
 			return;
 		}
-		mCircleModel.addComment(new IDataRequestListener() {
+		circleModel.addComment(new IDataRequestListener() {
 
 			@Override
 			public void loadSuccess(Object object) {
@@ -114,8 +123,9 @@ public class CirclePresenter implements CircleContract.Presenter{
 				} else if (config.commentType == CommentConfig.Type.REPLY) {
 					newItem = DatasUtil.createReplyComment(config.replyUser, content);
 				}
-
-				view.update2AddComment(config.circlePosition, newItem);
+                if(view!=null){
+                    view.update2AddComment(config.circlePosition, newItem);
+                }
 			}
 
 		});
@@ -131,11 +141,13 @@ public class CirclePresenter implements CircleContract.Presenter{
 	* @throws
 	 */
 	public void deleteComment(final int circlePosition, final String commentId){
-		mCircleModel.deleteComment(new IDataRequestListener(){
+		circleModel.deleteComment(new IDataRequestListener(){
 
 			@Override
 			public void loadSuccess(Object object) {
-				view.update2DeleteComment(circlePosition, commentId);
+                if(view!=null){
+                    view.update2DeleteComment(circlePosition, commentId);
+                }
 			}
 			
 		});
@@ -146,7 +158,9 @@ public class CirclePresenter implements CircleContract.Presenter{
 	 * @param commentConfig
 	 */
 	public void showEditTextBody(CommentConfig commentConfig){
-		view.updateEditTextBodyVisible(View.VISIBLE, commentConfig);
+        if(view != null){
+            view.updateEditTextBodyVisible(View.VISIBLE, commentConfig);
+        }
 	}
 
 

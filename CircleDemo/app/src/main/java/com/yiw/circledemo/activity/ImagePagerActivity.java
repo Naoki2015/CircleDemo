@@ -10,6 +10,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -27,8 +28,6 @@ import com.yiw.circledemo.R;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import uk.co.senab.photoview.PhotoView;
 
 /**
  * Created by yiw on 2016/1/6.
@@ -114,6 +113,16 @@ public class ImagePagerActivity extends Activity{
         }
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        try{
+            return super.dispatchTouchEvent(ev);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     private static class ImageAdapter extends PagerAdapter{
 
         private List<String> datas = new ArrayList<String>();
@@ -146,7 +155,7 @@ public class ImagePagerActivity extends Activity{
         public Object instantiateItem(ViewGroup container, final int position) {
             View view = inflater.inflate(R.layout.item_pager_image, container, false);
             if(view != null){
-                final PhotoView imageView = (PhotoView) view.findViewById(R.id.image);
+                final ImageView imageView = (ImageView) view.findViewById(R.id.image);
 
                 if(imageSize!=null){
                     //预览imageView
