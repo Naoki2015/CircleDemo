@@ -26,6 +26,7 @@ import com.yiw.circledemo.bean.FavortItem;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
 import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.utils.GlideCircleTransform;
+import com.yiw.circledemo.utils.ImageSize;
 import com.yiw.circledemo.utils.UrlUtils;
 import com.yiw.circledemo.widgets.CommentListView;
 import com.yiw.circledemo.widgets.ExpandTextView;
@@ -239,7 +240,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                             @Override
                             public void onItemClick(View view, int position) {
                                 //imagesize是作为loading时的图片size
-                                ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
+                                ImageSize imageSize = new ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
                                 ImagePagerActivity.startImagePagerActivity(context, photos, position, imageSize);
                             }
                         });
