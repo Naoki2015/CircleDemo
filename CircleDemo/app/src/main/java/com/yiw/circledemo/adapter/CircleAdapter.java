@@ -1,16 +1,11 @@
 package com.yiw.circledemo.adapter;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -18,6 +13,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
 import com.yiw.circledemo.activity.ImagePagerActivity;
+import com.yiw.circledemo.adapter.viewholder.CircleViewHolder;
+import com.yiw.circledemo.adapter.viewholder.ImageViewHolder;
+import com.yiw.circledemo.adapter.viewholder.URLViewHolder;
+import com.yiw.circledemo.adapter.viewholder.VideoViewHolder;
 import com.yiw.circledemo.bean.ActionItem;
 import com.yiw.circledemo.bean.CircleItem;
 import com.yiw.circledemo.bean.CommentConfig;
@@ -27,15 +26,12 @@ import com.yiw.circledemo.mvp.presenter.CirclePresenter;
 import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.utils.GlideCircleTransform;
 import com.yiw.circledemo.utils.UrlUtils;
-import com.yiw.circledemo.widgets.CommentListView;
-import com.yiw.circledemo.widgets.ExpandTextView;
-import com.yiw.circledemo.widgets.PraiseListView;
 import com.yiw.circledemo.widgets.CircleVideoView;
+import com.yiw.circledemo.widgets.CommentListView;
 import com.yiw.circledemo.widgets.MultiImageView;
+import com.yiw.circledemo.widgets.PraiseListView;
 import com.yiw.circledemo.widgets.SnsPopupWindow;
 import com.yiw.circledemo.widgets.dialog.CommentDialog;
-import com.yiw.circledemo.widgets.videolist.model.VideoLoadMvpView;
-import com.yiw.circledemo.widgets.videolist.widget.TextureVideoView;
 
 import java.util.List;
 
@@ -45,9 +41,6 @@ import java.util.List;
 public class CircleAdapter extends BaseRecycleViewAdapter {
 
     public final static int TYPE_HEAD = 0;
-    public final static int TYPE_URL = 1;
-    public final static int TYPE_IMAGE = 2;
-    public final static int TYPE_VIDEO = 3;
 
     private static final int STATE_IDLE = 0;
     private static final int STATE_ACTIVED = 1;
@@ -76,24 +69,31 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
         int itemType = 0;
         CircleItem item = (CircleItem) datas.get(position-1);
         if (CircleItem.TYPE_URL.equals(item.getType())) {
-            itemType = TYPE_URL;
+            itemType = CircleViewHolder.TYPE_URL;
         } else if (CircleItem.TYPE_IMG.equals(item.getType())) {
-            itemType = TYPE_IMAGE;
+            itemType = CircleViewHolder.TYPE_IMAGE;
         } else if(CircleItem.TYPE_VIDEO.equals(item.getType())){
-            itemType = TYPE_VIDEO;
+            itemType = CircleViewHolder.TYPE_VIDEO;
         }
         return itemType;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder viewHolder;
+        RecyclerView.ViewHolder viewHolder = null;
         if(viewType == TYPE_HEAD){
             View headView = LayoutInflater.from(parent.getContext()).inflate(R.layout.head_circle, parent, false);
             viewHolder = new HeaderViewHolder(headView);
         }else{
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_circle_item, parent, false);
-            viewHolder = new CircleViewHolder(view, viewType);
+
+            if(viewType == CircleViewHolder.TYPE_URL){
+                viewHolder = new URLViewHolder(view);
+            }else if(viewType == CircleViewHolder.TYPE_IMAGE){
+                viewHolder = new ImageViewHolder(view);
+            }else if(viewType == CircleViewHolder.TYPE_VIDEO){
+                viewHolder = new VideoViewHolder(view);
+            }
         }
 
         return viewHolder;
@@ -103,7 +103,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
 
         if(getItemViewType(position)==TYPE_HEAD){
-            HeaderViewHolder holder = (HeaderViewHolder) viewHolder;
+            //HeaderViewHolder holder = (HeaderViewHolder) viewHolder;
         }else{
 
             final int circlePosition = position - HEADVIEW_SIZE;
@@ -222,41 +222,50 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
 
             holder.urlTipTv.setVisibility(View.GONE);
             switch (holder.viewType) {
-                case TYPE_URL:// 处理链接动态的链接内容和和图片
-                    String linkImg = circleItem.getLinkImg();
-                    String linkTitle = circleItem.getLinkTitle();
-                    Glide.with(context).load(linkImg).into(holder.urlImageIv);
-                    holder.urlContentTv.setText(linkTitle);
-                    holder.urlBody.setVisibility(View.VISIBLE);
-                    holder.urlTipTv.setVisibility(View.VISIBLE);
+                case CircleViewHolder.TYPE_URL:// 处理链接动态的链接内容和和图片
+                    if(holder instanceof URLViewHolder){
+                        String linkImg = circleItem.getLinkImg();
+                        String linkTitle = circleItem.getLinkTitle();
+                        Glide.with(context).load(linkImg).into(((URLViewHolder)holder).urlImageIv);
+                        ((URLViewHolder)holder).urlContentTv.setText(linkTitle);
+                        ((URLViewHolder)holder).urlBody.setVisibility(View.VISIBLE);
+                        ((URLViewHolder)holder).urlTipTv.setVisibility(View.VISIBLE);
+                    }
+
                     break;
-                case TYPE_IMAGE:// 处理图片
-                    final List<String> photos = circleItem.getPhotos();
-                    if (photos != null && photos.size() > 0) {
-                        holder.multiImageView.setVisibility(View.VISIBLE);
-                        holder.multiImageView.setList(photos);
-                        holder.multiImageView.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
+                case CircleViewHolder.TYPE_IMAGE:// 处理图片
+                    if(holder instanceof ImageViewHolder){
+                        final List<String> photos = circleItem.getPhotos();
+                        if (photos != null && photos.size() > 0) {
+                            ((ImageViewHolder)holder).multiImageView.setVisibility(View.VISIBLE);
+                            ((ImageViewHolder)holder).multiImageView.setList(photos);
+                            ((ImageViewHolder)holder).multiImageView.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(View view, int position) {
+                                    //imagesize是作为loading时的图片size
+                                    ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
+                                    ImagePagerActivity.startImagePagerActivity(context, photos, position, imageSize);
+                                }
+                            });
+                        } else {
+                            ((ImageViewHolder)holder).multiImageView.setVisibility(View.GONE);
+                        }
+                    }
+
+                    break;
+                case CircleViewHolder.TYPE_VIDEO:
+                    if(holder instanceof VideoViewHolder){
+                        ((VideoViewHolder)holder).videoView.setVideoUrl(circleItem.getVideoUrl());
+                        ((VideoViewHolder)holder).videoView.setVideoImgUrl(circleItem.getVideoImgUrl());//视频封面图片
+                        ((VideoViewHolder)holder).videoView.setPostion(position);
+                        ((VideoViewHolder)holder).videoView.setOnPlayClickListener(new CircleVideoView.OnPlayClickListener() {
                             @Override
-                            public void onItemClick(View view, int position) {
-                                //imagesize是作为loading时的图片size
-                                ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
-                                ImagePagerActivity.startImagePagerActivity(context, photos, position, imageSize);
+                            public void onPlayClick(int pos) {
+                                curPlayIndex = pos;
                             }
                         });
-                    } else {
-                        holder.multiImageView.setVisibility(View.GONE);
                     }
-                    break;
-                case TYPE_VIDEO:
-                    holder.videoView.setVideoUrl(circleItem.getVideoUrl());
-                    holder.videoView.setVideoImgUrl(circleItem.getVideoImgUrl());//视频封面图片
-                    holder.videoView.setPostion(position);
-                    holder.videoView.setOnPlayClickListener(new CircleVideoView.OnPlayClickListener() {
-                        @Override
-                        public void onPlayClick(int pos) {
-                            curPlayIndex = pos;
-                        }
-                    });
+
                     break;
                 default:
                     break;
@@ -273,117 +282,6 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
-        }
-    }
-
-    public class CircleViewHolder extends RecyclerView.ViewHolder implements VideoLoadMvpView {
-        public int viewType;
-
-        public ImageView headIv;
-        public TextView nameTv;
-        public TextView urlTipTv;
-        /** 动态的内容 */
-        public ExpandTextView contentTv;
-        public TextView timeTv;
-        public TextView deleteBtn;
-        public ImageView snsBtn;
-        /** 点赞列表*/
-        public PraiseListView praiseListView;
-
-        public LinearLayout urlBody;
-        public LinearLayout digCommentBody;
-        public View digLine;
-
-        /** 评论列表 */
-        public CommentListView commentList;
-        /** 链接的图片 */
-        public ImageView urlImageIv;
-        /** 链接的标题 */
-        public TextView urlContentTv;
-        /** 图片*/
-        public MultiImageView multiImageView;
-
-        public CircleVideoView videoView;
-        // ===========================
-        public SnsPopupWindow snsPopupWindow;
-
-        public CircleViewHolder(View itemView, int viewType) {
-            super(itemView);
-            this.viewType = viewType;
-
-            ViewStub viewStub = (ViewStub) itemView.findViewById(R.id.viewStub);
-            switch (viewType) {
-                case TYPE_URL:// 链接view
-                    viewStub.setLayoutResource(R.layout.viewstub_urlbody);
-                    viewStub.inflate();
-                    LinearLayout urlBodyView = (LinearLayout) itemView.findViewById(R.id.urlBody);
-                    if(urlBodyView != null){
-                        urlBody = urlBodyView;
-                        urlImageIv = (ImageView) itemView.findViewById(R.id.urlImageIv);
-                        urlContentTv = (TextView) itemView.findViewById(R.id.urlContentTv);
-                    }
-                    break;
-                case TYPE_IMAGE:// 图片view
-                    viewStub.setLayoutResource(R.layout.viewstub_imgbody);
-                    viewStub.inflate();
-                    MultiImageView multiImageView = (MultiImageView) itemView.findViewById(R.id.multiImagView);
-                    if(multiImageView != null){
-                        this.multiImageView = multiImageView;
-                    }
-                    break;
-                case TYPE_VIDEO:
-                    viewStub.setLayoutResource(R.layout.viewstub_videobody);
-                    viewStub.inflate();
-
-                    CircleVideoView videoBody = (CircleVideoView) itemView.findViewById(R.id.videoView);
-                    if(videoBody!=null){
-                        this.videoView = videoBody;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            headIv = (ImageView) itemView.findViewById(R.id.headIv);
-            nameTv = (TextView) itemView.findViewById(R.id.nameTv);
-            digLine = itemView.findViewById(R.id.lin_dig);
-
-            contentTv = (ExpandTextView) itemView.findViewById(R.id.contentTv);
-            urlTipTv = (TextView) itemView.findViewById(R.id.urlTipTv);
-            timeTv = (TextView) itemView.findViewById(R.id.timeTv);
-            deleteBtn = (TextView) itemView.findViewById(R.id.deleteBtn);
-            snsBtn = (ImageView) itemView.findViewById(R.id.snsBtn);
-            praiseListView = (PraiseListView) itemView.findViewById(R.id.praiseListView);
-
-            digCommentBody = (LinearLayout) itemView.findViewById(R.id.digCommentBody);
-            commentList = (CommentListView)itemView.findViewById(R.id.commentList);
-
-            snsPopupWindow = new SnsPopupWindow(itemView.getContext());
-
-        }
-
-        @Override
-        public TextureVideoView getVideoView() {
-            return null;
-        }
-
-        @Override
-        public void videoBeginning() {
-
-        }
-
-        @Override
-        public void videoStopped() {
-
-        }
-
-        @Override
-        public void videoPrepared(MediaPlayer player) {
-
-        }
-
-        @Override
-        public void videoResourceReady(String videoPath) {
-
         }
     }
 
