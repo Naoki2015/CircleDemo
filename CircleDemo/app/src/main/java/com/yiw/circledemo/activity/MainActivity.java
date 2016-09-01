@@ -137,19 +137,19 @@ public class MainActivity extends Activity implements CircleContract.View{
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 				super.onScrolled(recyclerView, dx, dy);
-				Glide.with(MainActivity.this).resumeRequests();
 			}
 
 			@Override
 			public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
 				super.onScrollStateChanged(recyclerView, newState);
-				if(newState != RecyclerView.SCROLL_STATE_IDLE){
+				if(newState == RecyclerView.SCROLL_STATE_IDLE){
+					Glide.with(MainActivity.this).resumeRequests();
+				}else{
 					Glide.with(MainActivity.this).pauseRequests();
 				}
 
 			}
 		});
-
 
 		circleAdapter = new CircleAdapter(this);
 		circleAdapter.setCirclePresenter(presenter);
