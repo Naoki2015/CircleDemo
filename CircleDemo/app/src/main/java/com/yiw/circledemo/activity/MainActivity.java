@@ -77,6 +77,7 @@ public class MainActivity extends Activity implements CircleContract.View{
     private final static int TYPE_PULLREFRESH = 1;
     private final static int TYPE_UPLOADREFRESH = 2;
     private UpLoadDialog uploadDialog;
+    private SwipeRefreshLayout.OnRefreshListener refreshListener;
 
 
     @Override
@@ -86,7 +87,14 @@ public class MainActivity extends Activity implements CircleContract.View{
 		presenter = new CirclePresenter(this);
 		initView();
 
-        presenter.loadData(TYPE_PULLREFRESH);
+        //实现自动下拉刷新功能
+        recyclerView.getSwipeToRefresh().post(new Runnable(){
+            @Override
+            public void run() {
+                recyclerView.setRefreshing(true);//执行下拉刷新的动画
+                refreshListener.onRefresh();//执行数据加载操作
+            }
+        });
 	}
 
     @Override
@@ -120,18 +128,18 @@ public class MainActivity extends Activity implements CircleContract.View{
 			}
 		});
 
-        recyclerView.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         presenter.loadData(TYPE_PULLREFRESH);
-                        recyclerView.setRefreshing(false);
                     }
                 }, 2000);
             }
-        });
+        };
+        recyclerView.setRefreshListener(refreshListener);
 
 		recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
@@ -348,6 +356,7 @@ public class MainActivity extends Activity implements CircleContract.View{
     @Override
     public void update2loadData(int loadType, List<CircleItem> datas) {
         if (loadType == TYPE_PULLREFRESH){
+            recyclerView.setRefreshing(false);
             circleAdapter.setDatas(datas);
         }else if(loadType == TYPE_UPLOADREFRESH){
             circleAdapter.getDatas().addAll(datas);
