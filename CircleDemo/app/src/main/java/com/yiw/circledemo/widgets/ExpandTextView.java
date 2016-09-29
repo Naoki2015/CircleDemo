@@ -42,6 +42,9 @@ public class ExpandTextView extends LinearLayout {
         setOrientation(LinearLayout.VERTICAL);
         LayoutInflater.from(getContext()).inflate(R.layout.layout_magic_text, this);
         contentText = (TextView) findViewById(R.id.contentText);
+        if(showLines > 0){
+            contentText.setMaxLines(showLines);
+        }
 
         textPlus = (TextView) findViewById(R.id.textPlus);
         textPlus.setOnClickListener(new View.OnClickListener() {
@@ -68,11 +71,11 @@ public class ExpandTextView extends LinearLayout {
         }
     }
 
-    public void setText(CharSequence content){
-        contentText.setText(content);
+    public void setText(final CharSequence content){
         contentText.post(new Runnable() {
             @Override
             public void run() {
+                contentText.setText(content);
                 int linCount = contentText.getLineCount();
                 if(linCount > showLines){
                     contentText.setMaxLines(showLines);
