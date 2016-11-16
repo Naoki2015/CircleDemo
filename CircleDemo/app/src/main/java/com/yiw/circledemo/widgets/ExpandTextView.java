@@ -21,6 +21,9 @@ public class ExpandTextView extends LinearLayout {
 
     private int showLines;
 
+    private ExpandStatusListener expandStatusListener;
+    private boolean isExpand;
+
     public ExpandTextView(Context context) {
         super(context);
         initView();
@@ -54,9 +57,15 @@ public class ExpandTextView extends LinearLayout {
                 if("全文".equals(textStr)){
                     contentText.setMaxLines(Integer.MAX_VALUE);
                     textPlus.setText("收起");
+                    setExpand(true);
                 }else{
                     contentText.setMaxLines(showLines);
                     textPlus.setText("全文");
+                    setExpand(false);
+                }
+                //通知外部状态已变更
+                if(expandStatusListener != null){
+                    expandStatusListener.statusChange(isExpand());
                 }
             }
         });
@@ -78,9 +87,15 @@ public class ExpandTextView extends LinearLayout {
                 contentText.setText(content);
                 int linCount = contentText.getLineCount();
                 if(linCount > showLines){
-                    contentText.setMaxLines(showLines);
+
+                    if(isExpand){
+                        contentText.setMaxLines(Integer.MAX_VALUE);
+                        textPlus.setText("收起");
+                    }else{
+                        contentText.setMaxLines(showLines);
+                        textPlus.setText("全文");
+                    }
                     textPlus.setVisibility(View.VISIBLE);
-                    textPlus.setText("全文");
                 }else{
                     textPlus.setVisibility(View.GONE);
                 }
@@ -88,6 +103,23 @@ public class ExpandTextView extends LinearLayout {
         });
 
         contentText.setMovementMethod(new CircleMovementMethod(getResources().getColor(R.color.name_selector_color)));
+    }
+
+    public void setExpand(boolean isExpand){
+        this.isExpand = isExpand;
+    }
+
+    public boolean isExpand(){
+        return this.isExpand;
+    }
+
+    public void setExpandStatusListener(ExpandStatusListener listener){
+        this.expandStatusListener = listener;
+    }
+
+    public static interface ExpandStatusListener{
+
+        void statusChange(boolean isExpand);
     }
 
 }
