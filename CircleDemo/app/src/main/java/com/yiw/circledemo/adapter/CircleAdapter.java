@@ -13,6 +13,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yiw.circledemo.MyApplication;
 import com.yiw.circledemo.R;
 import com.yiw.circledemo.activity.ImagePagerActivity;
+import com.yiw.circledemo.activity.MainActivity;
 import com.yiw.circledemo.adapter.viewholder.CircleViewHolder;
 import com.yiw.circledemo.adapter.viewholder.ImageViewHolder;
 import com.yiw.circledemo.adapter.viewholder.URLViewHolder;
@@ -28,6 +29,7 @@ import com.yiw.circledemo.utils.GlideCircleTransform;
 import com.yiw.circledemo.utils.UrlUtils;
 import com.yiw.circledemo.widgets.CircleVideoView;
 import com.yiw.circledemo.widgets.CommentListView;
+import com.yiw.circledemo.widgets.ExpandTextView;
 import com.yiw.circledemo.widgets.MultiImageView;
 import com.yiw.circledemo.widgets.PraiseListView;
 import com.yiw.circledemo.widgets.SnsPopupWindow;
@@ -108,7 +110,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
 
             final int circlePosition = position - HEADVIEW_SIZE;
             final CircleViewHolder holder = (CircleViewHolder) viewHolder;
-            CircleItem circleItem = (CircleItem) datas.get(circlePosition);
+            final CircleItem circleItem = (CircleItem) datas.get(circlePosition);
             final String circleId = circleItem.getId();
             String name = circleItem.getUser().getName();
             String headImg = circleItem.getUser().getHeadUrl();
@@ -125,6 +127,14 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
             holder.timeTv.setText(createTime);
 
             if(!TextUtils.isEmpty(content)){
+                holder.contentTv.setExpand(circleItem.isExpand());
+                holder.contentTv.setExpandStatusListener(new ExpandTextView.ExpandStatusListener() {
+                    @Override
+                    public void statusChange(boolean isExpand) {
+                        circleItem.setExpand(isExpand);
+                    }
+                });
+
                 holder.contentTv.setText(UrlUtils.formatUrlString(content));
             }
             holder.contentTv.setVisibility(TextUtils.isEmpty(content) ? View.GONE : View.VISIBLE);
@@ -244,7 +254,9 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                                 public void onItemClick(View view, int position) {
                                     //imagesize是作为loading时的图片size
                                     ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
-                                    ImagePagerActivity.startImagePagerActivity(context, photos, position, imageSize);
+                                    ImagePagerActivity.startImagePagerActivity(((MainActivity) context), view, photos, position, imageSize);
+
+
                                 }
                             });
                         } else {
@@ -276,6 +288,11 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
     @Override
     public int getItemCount() {
         return datas.size()+1;//有head需要加1
+    }
+
+    @Override
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
     }
 
     public class HeaderViewHolder extends RecyclerView.ViewHolder{
