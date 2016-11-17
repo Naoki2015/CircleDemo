@@ -183,8 +183,8 @@ public class MultiImageView extends LinearLayout {
 			imageView.setScaleType(ScaleType.CENTER_INSIDE);
 			//imageView.setMaxHeight(pxOneMaxWandH);
 
-            int expectW = photoInfo.w;//DensityUtil.px2dip(getContext(), photoInfo.w);
-            int expectH = photoInfo.h;//DensityUtil.px2dip(getContext(), photoInfo.h);
+            int expectW = photoInfo.w;
+            int expectH = photoInfo.h;
 
             if(expectW == 0 || expectH == 0){
                 imageView.setLayoutParams(onePicPara);
@@ -194,6 +194,9 @@ public class MultiImageView extends LinearLayout {
                 float scale = ((float) expectH)/((float) expectW);
                 if(expectW > pxOneMaxWandH){
                     actualW = pxOneMaxWandH;
+                    actualH = (int)(actualW * scale);
+                } else if(expectW < pxMoreWandH){
+                    actualW = pxMoreWandH;
                     actualH = (int)(actualW * scale);
                 }else{
                     actualW = expectW;
@@ -207,7 +210,6 @@ public class MultiImageView extends LinearLayout {
 		imageView.setOnClickListener(new ImageOnClickListener(position));
 		imageView.setBackgroundColor(getResources().getColor(R.color.im_font_color_text_hint));
 		Glide.with(getContext()).load(photoInfo.url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
-
 
 		return imageView;
 	}
