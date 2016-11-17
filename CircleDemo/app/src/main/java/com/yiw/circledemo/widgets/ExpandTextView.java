@@ -3,8 +3,10 @@ package com.yiw.circledemo.widgets;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -81,10 +83,13 @@ public class ExpandTextView extends LinearLayout {
     }
 
     public void setText(final CharSequence content){
-        contentText.post(new Runnable() {
+        contentText.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+
             @Override
-            public void run() {
-                contentText.setText(content);
+            public boolean onPreDraw() {
+                // 避免重复监听
+                contentText.getViewTreeObserver().removeOnPreDrawListener(this);
+
                 int linCount = contentText.getLineCount();
                 if(linCount > showLines){
 
@@ -99,9 +104,15 @@ public class ExpandTextView extends LinearLayout {
                 }else{
                     textPlus.setVisibility(View.GONE);
                 }
-            }
-        });
 
+                //Log.d("onPreDraw", "onPreDraw...");
+                //Log.d("onPreDraw", linCount + "");
+                return true;
+            }
+
+
+        });
+        contentText.setText(content);
         contentText.setMovementMethod(new CircleMovementMethod(getResources().getColor(R.color.name_selector_color)));
     }
 
