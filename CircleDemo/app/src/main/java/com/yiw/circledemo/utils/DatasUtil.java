@@ -199,7 +199,7 @@ public class DatasUtil {
 
 	public static List<PhotoInfo> createPhotos() {
 		List<PhotoInfo> photos = new ArrayList<PhotoInfo>();
-		int size = getRandomNum(2/*PHOTOS.size()*/);
+		int size = getRandomNum(PHOTOS.size());
 		if (size > 0) {
 			if (size > 9) {
 				size = 9;
