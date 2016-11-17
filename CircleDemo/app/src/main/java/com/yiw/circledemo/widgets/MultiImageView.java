@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.yiw.circledemo.R;
+import com.yiw.circledemo.bean.PhotoInfo;
 import com.yiw.circledemo.utils.DensityUtil;
 
 import java.util.List;
@@ -24,7 +26,7 @@ public class MultiImageView extends LinearLayout {
 	public static int MAX_WIDTH = 0;
 
 	// 照片的Url列表
-	private List<String> imagesList;
+	private List<PhotoInfo> imagesList;
 
 	/** 长度 单位为Pixel **/
 	private int pxOneMaxWandH;  // 单张图最大允许宽高
@@ -33,7 +35,7 @@ public class MultiImageView extends LinearLayout {
 
 	private int MAX_PER_ROW_COUNT = 3;// 每行显示最大数
 
-	private LayoutParams onePicPara;
+//	private LayoutParams onePicPara;
 	private LayoutParams morePara, moreParaColumnFirst;
 	private LayoutParams rowPara;
 
@@ -50,7 +52,7 @@ public class MultiImageView extends LinearLayout {
 		super(context, attrs);
 	}
 
-	public void setList(List<String> lists) throws IllegalArgumentException{
+	public void setList(List<PhotoInfo> lists) throws IllegalArgumentException{
 		if(lists==null){
 			throw new IllegalArgumentException("imageList is null...");
 		}
@@ -111,7 +113,7 @@ public class MultiImageView extends LinearLayout {
 		int wrap = LayoutParams.WRAP_CONTENT;
 		int match = LayoutParams.MATCH_PARENT;
 
-		onePicPara = new LayoutParams(wrap, wrap);
+		//onePicPara = new LayoutParams(wrap, wrap);
 
 		moreParaColumnFirst = new LayoutParams(pxMoreWandH, pxMoreWandH);
 		morePara = new LayoutParams(pxMoreWandH, pxMoreWandH);
@@ -135,7 +137,7 @@ public class MultiImageView extends LinearLayout {
 		}
 
 		if (imagesList.size() == 1) {
-				addView(createImageView(0, false));
+			addView(createImageView(0, false));
 		} else {
 			int allCount = imagesList.size();
 			if(allCount == 4){
@@ -171,7 +173,7 @@ public class MultiImageView extends LinearLayout {
 	}
 
 	private ImageView createImageView(int position, final boolean isMultiImage) {
-		String url = imagesList.get(position);
+		PhotoInfo photoInfo = imagesList.get(position);
 		ImageView imageView = new ColorFilterImageView(getContext());
 		if(isMultiImage){
 			imageView.setScaleType(ScaleType.CENTER_CROP);
@@ -179,13 +181,31 @@ public class MultiImageView extends LinearLayout {
 		}else {
 			imageView.setAdjustViewBounds(true);
 			imageView.setScaleType(ScaleType.CENTER_INSIDE);
-			imageView.setMaxHeight(pxOneMaxWandH);
-			imageView.setLayoutParams(onePicPara);
+			//imageView.setMaxHeight(pxOneMaxWandH);
+
+            int expectW = photoInfo.w;//DensityUtil.px2dip(getContext(), photoInfo.w);
+            int expectH = photoInfo.h;//DensityUtil.px2dip(getContext(), photoInfo.h);
+
+            int actualW = 0;
+            int actualH = 0;
+            float scale = ((float) expectH)/((float) expectW);
+            if(expectW > pxOneMaxWandH){
+                actualW = pxOneMaxWandH;
+                actualH = (int)(actualW * scale);
+            }else{
+                actualW = expectW;
+                actualH = expectH;
+            }
+
+			imageView.setLayoutParams(new LayoutParams(actualW, actualH));
 		}
 
-		imageView.setId(url.hashCode());
+		imageView.setId(photoInfo.url.hashCode());
 		imageView.setOnClickListener(new ImageOnClickListener(position));
-		Glide.with(getContext()).load(url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+		imageView.setBackgroundColor(getResources().getColor(R.color.im_font_color_text_hint));
+		Glide.with(getContext()).load(photoInfo.url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+
+
 		return imageView;
 	}
 

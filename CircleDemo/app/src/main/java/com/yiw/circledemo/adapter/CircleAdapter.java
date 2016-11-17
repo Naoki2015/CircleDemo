@@ -23,6 +23,7 @@ import com.yiw.circledemo.bean.CircleItem;
 import com.yiw.circledemo.bean.CommentConfig;
 import com.yiw.circledemo.bean.CommentItem;
 import com.yiw.circledemo.bean.FavortItem;
+import com.yiw.circledemo.bean.PhotoInfo;
 import com.yiw.circledemo.mvp.presenter.CirclePresenter;
 import com.yiw.circledemo.utils.DatasUtil;
 import com.yiw.circledemo.utils.GlideCircleTransform;
@@ -35,6 +36,7 @@ import com.yiw.circledemo.widgets.PraiseListView;
 import com.yiw.circledemo.widgets.SnsPopupWindow;
 import com.yiw.circledemo.widgets.dialog.CommentDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -245,7 +247,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                     break;
                 case CircleViewHolder.TYPE_IMAGE:// 处理图片
                     if(holder instanceof ImageViewHolder){
-                        final List<String> photos = circleItem.getPhotos();
+                        final List<PhotoInfo> photos = circleItem.getPhotos();
                         if (photos != null && photos.size() > 0) {
                             ((ImageViewHolder)holder).multiImageView.setVisibility(View.VISIBLE);
                             ((ImageViewHolder)holder).multiImageView.setList(photos);
@@ -254,7 +256,12 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                                 public void onItemClick(View view, int position) {
                                     //imagesize是作为loading时的图片size
                                     ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
-                                    ImagePagerActivity.startImagePagerActivity(((MainActivity) context), view, photos, position, imageSize);
+
+                                    List<String> photoUrls = new ArrayList<String>();
+                                    for(PhotoInfo photoInfo : photos){
+                                        photoUrls.add(photoInfo.url);
+                                    }
+                                    ImagePagerActivity.startImagePagerActivity(((MainActivity) context), view, photoUrls, position, imageSize);
 
 
                                 }

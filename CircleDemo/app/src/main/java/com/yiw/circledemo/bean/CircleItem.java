@@ -22,7 +22,7 @@ public class CircleItem extends BaseBean{
 	private String type;//1:链接  2:图片 3:视频
 	private String linkImg;
 	private String linkTitle;
-	private List<String> photos;
+	private List<PhotoInfo> photos;
 	private List<FavortItem> favorters;
 	private List<CommentItem> comments;
 	private User user;
@@ -79,10 +79,10 @@ public class CircleItem extends BaseBean{
 	public void setLinkTitle(String linkTitle) {
 		this.linkTitle = linkTitle;
 	}
-	public List<String> getPhotos() {
+	public List<PhotoInfo> getPhotos() {
 		return photos;
 	}
-	public void setPhotos(List<String> photos) {
+	public void setPhotos(List<PhotoInfo> photos) {
 		this.photos = photos;
 	}
 	public User getUser() {
