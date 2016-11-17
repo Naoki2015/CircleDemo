@@ -35,7 +35,7 @@ public class MultiImageView extends LinearLayout {
 
 	private int MAX_PER_ROW_COUNT = 3;// 每行显示最大数
 
-//	private LayoutParams onePicPara;
+	private LayoutParams onePicPara;
 	private LayoutParams morePara, moreParaColumnFirst;
 	private LayoutParams rowPara;
 
@@ -113,7 +113,7 @@ public class MultiImageView extends LinearLayout {
 		int wrap = LayoutParams.WRAP_CONTENT;
 		int match = LayoutParams.MATCH_PARENT;
 
-		//onePicPara = new LayoutParams(wrap, wrap);
+		onePicPara = new LayoutParams(wrap, wrap);
 
 		moreParaColumnFirst = new LayoutParams(pxMoreWandH, pxMoreWandH);
 		morePara = new LayoutParams(pxMoreWandH, pxMoreWandH);
@@ -186,18 +186,21 @@ public class MultiImageView extends LinearLayout {
             int expectW = photoInfo.w;//DensityUtil.px2dip(getContext(), photoInfo.w);
             int expectH = photoInfo.h;//DensityUtil.px2dip(getContext(), photoInfo.h);
 
-            int actualW = 0;
-            int actualH = 0;
-            float scale = ((float) expectH)/((float) expectW);
-            if(expectW > pxOneMaxWandH){
-                actualW = pxOneMaxWandH;
-                actualH = (int)(actualW * scale);
+            if(expectW == 0 || expectH == 0){
+                imageView.setLayoutParams(onePicPara);
             }else{
-                actualW = expectW;
-                actualH = expectH;
+                int actualW = 0;
+                int actualH = 0;
+                float scale = ((float) expectH)/((float) expectW);
+                if(expectW > pxOneMaxWandH){
+                    actualW = pxOneMaxWandH;
+                    actualH = (int)(actualW * scale);
+                }else{
+                    actualW = expectW;
+                    actualH = expectH;
+                }
+                imageView.setLayoutParams(new LayoutParams(actualW, actualH));
             }
-
-			imageView.setLayoutParams(new LayoutParams(actualW, actualH));
 		}
 
 		imageView.setId(photoInfo.url.hashCode());
