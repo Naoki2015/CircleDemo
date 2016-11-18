@@ -261,7 +261,7 @@ public class CircleAdapter extends BaseRecycleViewAdapter {
                                     for(PhotoInfo photoInfo : photos){
                                         photoUrls.add(photoInfo.url);
                                     }
-                                    ImagePagerActivity.startImagePagerActivity(((MainActivity) context), view, photoUrls, position, imageSize);
+                                    ImagePagerActivity.startImagePagerActivity(((MainActivity) context), photoUrls, position, imageSize);
 
 
                                 }
