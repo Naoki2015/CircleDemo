@@ -1,1 +1,1 @@
-include ':app', ':httplib', ':qupai'
+include ':app', ':qupai'
