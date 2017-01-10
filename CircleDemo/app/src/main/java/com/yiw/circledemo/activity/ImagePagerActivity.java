@@ -1,6 +1,5 @@
 package com.yiw.circledemo.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -32,7 +31,7 @@ import java.util.List;
 /**
  * Created by yiw on 2016/1/6.
  */
-public class ImagePagerActivity extends Activity{
+public class ImagePagerActivity extends YWActivity{
     public static final String INTENT_IMGURLS = "imgurls";
     public static final String INTENT_POSITION = "position";
     public static final String INTENT_IMAGESIZE = "imagesize";

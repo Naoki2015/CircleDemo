@@ -1,7 +1,7 @@
 package com.yiw.circledemo.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -45,6 +45,9 @@ import com.yiw.qupai.listener.IUploadListener;
 import com.yiw.qupai.result.RecordResult;
 
 import java.util.List;
+
+import pub.devrel.easypermissions.EasyPermissions;
+
 /**
  * 
 * @ClassName: MainActivity 
@@ -53,7 +56,7 @@ import java.util.List;
 * @date 2015-12-28 下午4:21:18 
 *
  */
-public class MainActivity extends Activity implements CircleContract.View{
+public class MainActivity extends YWActivity implements CircleContract.View, EasyPermissions.PermissionCallbacks {
 
 	protected static final String TAG = MainActivity.class.getSimpleName();
 	private CircleAdapter circleAdapter;
@@ -87,6 +90,8 @@ public class MainActivity extends Activity implements CircleContract.View{
 		presenter = new CirclePresenter(this);
 		initView();
 
+		initPermission();
+
         //实现自动下拉刷新功能
         recyclerView.getSwipeToRefresh().post(new Runnable(){
             @Override
@@ -97,7 +102,23 @@ public class MainActivity extends Activity implements CircleContract.View{
         });
 	}
 
-    @Override
+
+	private void initPermission() {
+        String[] perms = {Manifest.permission.CALL_PHONE
+                , Manifest.permission.WRITE_EXTERNAL_STORAGE
+                , Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            // Already have permission, do the thing
+            // ...
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(this, "因为功能需要，需要使用相关权限，请允许",
+                    100, perms);
+        }
+	}
+
+	@Override
     protected void onDestroy() {
         if(presenter !=null){
             presenter.recycle();
@@ -164,7 +185,7 @@ public class MainActivity extends Activity implements CircleContract.View{
         recyclerView.setAdapter(circleAdapter);
 		
 		edittextbody = (LinearLayout) findViewById(R.id.editTextBodyLl);
-		 editText = (EditText) findViewById(R.id.circleEt);
+		editText = (EditText) findViewById(R.id.circleEt);
 		sendIv = (ImageView) findViewById(R.id.sendIv);
 		sendIv.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -515,4 +536,23 @@ public class MainActivity extends Activity implements CircleContract.View{
 	public void showError(String errorMsg) {
 
 	}
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        //Toast.makeText(this, "onPermissionsGranted  requestCode: " + requestCode , Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        Toast.makeText(this, "您拒绝了相关权限，可能会导致相关功能不可用" , Toast.LENGTH_LONG).show();
+        /*if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this, getString(R.string.rationale_ask_again))
+                    .setTitle(getString(R.string.title_settings_dialog))
+                    .setPositiveButton(getString(R.string.setting))
+                    .setNegativeButton(getString(R.string.cancel), null *//* click listener *//*)
+                    .setRequestCode(RC_SETTINGS_SCREEN)
+                    .build()
+                    .show();
+        }*/
+    }
 }

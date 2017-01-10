@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="colorPrimaryDark">#373b3e</color>
+    <color name="colorPrimary" >#373b3e</color>
     <color name="color_8290AF">#8290AF</color>
     <color name="color_232323">#232323</color>
     <color name="color_aeaeae">#aeaeae</color>
@@ -23,5 +25,6 @@
     <color name="praise_item">#8290AF</color>
 
     <color name="default_clickable_color">#cccccc</color>
+    <color name="basic_color_primary">#373b3e</color>
 
 </resources>
